@@ -1,0 +1,19 @@
+{
+  "name": "software-engineering-12",
+  "version": "1.0.0",
+  "description": "Software Engineering Group 12",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samrobbins85/software-engineering-12.git"
+  },
+  "author": "Group 12",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/samrobbins85/software-engineering-12/issues"
+  },
+  "homepage": "https://github.com/samrobbins85/software-engineering-12#readme"
+}
