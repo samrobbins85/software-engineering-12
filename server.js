@@ -1,5 +1,3 @@
-const express = require('express');
-const app = express();
-
+app = require('./app')
 
 app.listen(8080)
