@@ -34,4 +34,4 @@ function removeTray() {
 	);
 };
 
-removeTray();
+addtray();

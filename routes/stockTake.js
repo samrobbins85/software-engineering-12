@@ -29,21 +29,27 @@ router.post('/addTray', function(req, res, next){
   var MongoClient = require('mongodb').MongoClient;
   var url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
 
+  let terminate = false;
+
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
     var dbo = db.db("foodbank");
     var myobj = tray;
     let pos = {"zone": myobj["zone"], "bay": myobj["bay"], "tray": myobj["tray"]};
-    dbo.collection("food").count(pos, function(err, mres) {
+    dbo.collection("food").count(pos, function(err, count) {
       if (err) throw err;
-      if (mres["count"] > 0) {
+      if (count != 0) {
         console.log("This location already contains a tray.");
-        res.sendStatus(400);
-        res.end();
+        terminate = true;
       }
       db.close();
     });
   });
+
+  if (terminate) {
+    res.sendStatus(400);
+    return;
+  }
 
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
@@ -55,6 +61,11 @@ router.post('/addTray', function(req, res, next){
       db.close();
     });
   });
+
+  if (terminate) {
+    res.sendStatus(400);
+    return;
+  }
 
   res.append("Add Tray");
   res.sendStatus(200);
@@ -81,9 +92,6 @@ router.post('/editTray', function(req, res, next){
       db.close();
     });
   });
-
-
-
 
   res.append("Edit Tray");
   res.sendStatus(200);
