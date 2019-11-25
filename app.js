@@ -9,7 +9,7 @@ var usersRouter = require('./routes/users');
 let syncRouter = require('./routes/sync');
 let adminRouter = require('./routes/admin')
 let reportsRouter = require('./routes/reports')
-let stockTakeRouter = require('./routes/stock_take')
+let stockTakeRouter = require('./routes/stockTake')
 
 var app = express();
 
