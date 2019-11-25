@@ -4,9 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-const MongoClient = require('mongodb').MongoClient;
-const mongoUri = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
-mongoClient = new MongoClient(mongoUri, { useNewUrlParser: true });
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');

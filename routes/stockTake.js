@@ -27,22 +27,20 @@ router.post('/addTray', function(req, res, next){
       expiry: string
   */
 
-  let tray = req.body.tray;
+  let tray = req.body;
 
-  mongoClient.connect(err => {
-    const collection = mongoClient.db("test").collection("devices");
-    // perform actions on the collection object
+  var MongoClient = require('mongodb').MongoClient;
+  var url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
 
-    let myobj = tray;
-
-    // TODO: Check if position is already occupied
-    collection.insertOne(myobj, function(err, res) {
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodbank");
+    var myobj = tray;
+    dbo.collection("food").insertOne(myobj, function(err, res) {
       if (err) throw err;
-      console.log("1 tray inserted");
+      console.log("1 document inserted");
       db.close();
     });
-
-    mongoClient.close();
   });
 
   res.append("Add Tray");
@@ -56,19 +54,23 @@ router.post('/editTray', function(req, res, next){
     Returns:
       Whether this action completed successfully or not.
   */
-  let tray = req.body.tray;
-  let myobj = tray;
-
+  let myobj = req.body;
+  var MongoClient = require('mongodb').MongoClient;
+  var url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
   let myQuery = {"zone": myobj["zone"], "bay": myobj["bay"], "tray": myobj["tray"]};
   let newValues = {$set: {"contents": myobj["contents"], "weight": myobj["weight"], "expiry": myobj["expiry"]}};
-
-  collection.updateOne(myQuery, newValues, function(err, res) {
+  MongoClient.connect(url, function(err, db) {
     if (err) throw err;
-    console.log("1 tray edited!");
-    db.close();
+    var dbo = db.db("foodbank");
+    dbo.collection("food").updateOne(myQuery, newValues, function(err, res) {
+      if (err) throw err;
+      console.log("1 document edited");
+      db.close();
+    });
   });
 
-  mongoClient.close();
+
+
 
   res.append("Edit Tray");
   res.sendStatus(200);
