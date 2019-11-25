@@ -3,10 +3,7 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  console.log("BEEEP");
-  console.log(mongoClient);
   res.send('This is stock taking');
-
 });
 
 router.post('/addTray', function(req, res, next){
@@ -31,6 +28,22 @@ router.post('/addTray', function(req, res, next){
 
   let MongoClient = require('mongodb').MongoClient;
   let url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
+
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("foodbank");
+    var myobj = tray;
+    let pos = {"zone": myobj["zone"], "bay": myobj["bay"], "tray": myobj["tray"]};
+    dbo.collection("food").count(pos, function(err, mres) {
+      if (err) throw err;
+      if (mres["count"] > 0) {
+        console.log("This location already contains a tray.");
+        res.sendStatus(400);
+        res.end();
+      }
+      db.close();
+    });
+  });
 
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
@@ -84,6 +97,8 @@ router.post('/removeTray', function(req, res, next){
   let MongoClient = require('mongodb').MongoClient;
   let url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
   let myQuery = {"zone": pos["zone"], "bay": pos["bay"], "tray": pos["tray"]};
+
+  console.log("BEEP");
 
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
