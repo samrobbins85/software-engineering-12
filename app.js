@@ -4,6 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const MongoClient = require('mongodb').MongoClient;
+const mongoUri = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
+mongoClient = new MongoClient(mongoUri, { useNewUrlParser: true });
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 let syncRouter = require('./routes/sync');
@@ -15,7 +19,8 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
+//app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());

@@ -3,7 +3,10 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
+  console.log("BEEEP");
+  console.log(mongoClient);
   res.send('This is stock taking');
+
 });
 
 router.post('/addTray', function(req, res, next){
@@ -13,7 +16,35 @@ router.post('/addTray', function(req, res, next){
     Returns:
       Whether this action completed successfully or not.
   */
+
+  /*
+    Tray Syntax:
+      zone: string
+      bay: string
+      tray: string
+      contents: string
+      weight: string
+      expiry: string
+  */
+
   let tray = req.body.tray;
+
+  mongoClient.connect(err => {
+    const collection = mongoClient.db("test").collection("devices");
+    // perform actions on the collection object
+
+    let myobj = tray;
+
+    // TODO: Check if position is already occupied
+    collection.insertOne(myobj, function(err, res) {
+      if (err) throw err;
+      console.log("1 tray inserted");
+      db.close();
+    });
+
+    mongoClient.close();
+  });
+
   res.append("Add Tray");
   res.sendStatus(200);
 }); 
@@ -26,6 +57,19 @@ router.post('/editTray', function(req, res, next){
       Whether this action completed successfully or not.
   */
   let tray = req.body.tray;
+  let myobj = tray;
+
+  let myQuery = {"zone": myobj["zone"], "bay": myobj["bay"], "tray": myobj["tray"]};
+  let newValues = {$set: {"contents": myobj["contents"], "weight": myobj["weight"], "expiry": myobj["expiry"]}};
+
+  collection.updateOne(myQuery, newValues, function(err, res) {
+    if (err) throw err;
+    console.log("1 tray edited!");
+    db.close();
+  });
+
+  mongoClient.close();
+
   res.append("Edit Tray");
   res.sendStatus(200);
 }); 
