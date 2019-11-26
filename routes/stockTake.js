@@ -94,7 +94,7 @@ router.post('/removeTray', function(req, res, next){
   res.sendStatus(200);
 });
 
-router.post('/moveTray', function(req, res, next){
+router.post('/switchTray', function(req, res, next){
   /*
   To begin with just move tray within bay.
     Inputs:
@@ -105,6 +105,22 @@ router.post('/moveTray', function(req, res, next){
   */
   let posStart = req.body.posStart;
   let posTarget = req.body.posTarget;
+  let MongoClient = require('mongodb').MongoClient;
+  let url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
+  let myQueryA = {"zone": postStart["zone"], "bay": posStart["bay"], "tray": posStart["tray"]};
+  let myQueryB = {"zone": posTarget["zone"], "bay": posTarget["bay"], "tray": posTarget["tray"]};
+  
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    let dbo = db.db("foodbank");
+    dbo.collection("food").update(myQueryA, myQueryB, (function(err, res) {
+      if (err) throw errl
+      console.log("Switched trays at Zone: " + myQueryA["zone"] + ", Bay: " + myQueryA["bay"] + ", Tray: " + myQueryA["tray"] + "and Zone: " + myQueryA["zone"] + ", Bay: " + myQueryA["bay"] + ", Tray: " + myQueryA["tray"]);
+      db.close();
+    });
+    
+  });
+  
   res.sendStatus(200);
 });  
 
