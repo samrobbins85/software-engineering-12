@@ -59,14 +59,13 @@ router.post('/editTray', function(req, res, next){
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
     var dbo = db.db("foodbank");
-    dbo.collection("food").updateOne(myQuery, newValues, function(err, res) {
+    dbo.collection("food").updateOne(myQuery, newValues, function(err, mongoRes) {
       if (err) throw err;
-      console.log("1 document edited");
+      console.log(mongoRes["modifiedCount"] + " document edited");
       db.close();
     });
   });
 
-  res.append("Edit Tray");
   res.sendStatus(200);
 }); 
 
@@ -82,8 +81,6 @@ router.post('/removeTray', function(req, res, next){
   let url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
   let myQuery = {"zone": pos["zone"], "bay": pos["bay"], "tray": pos["tray"]};
 
-  console.log("BEEP");
-
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
     let dbo = db.db("foodbank");
@@ -94,7 +91,6 @@ router.post('/removeTray', function(req, res, next){
     });
   });
 
-  res.append("Remove Tray");
   res.sendStatus(200);
 });
 
@@ -109,7 +105,6 @@ router.post('/moveTray', function(req, res, next){
   */
   let posStart = req.body.posStart;
   let posTarget = req.body.posTarget;
-  res.append("Move Tray");
   res.sendStatus(200);
 });  
 
