@@ -29,45 +29,18 @@ router.post('/addTray', function(req, res, next){
   var MongoClient = require('mongodb').MongoClient;
   var url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
 
-  let terminate = false;
-
   MongoClient.connect(url, function(err, db) {
     if (err) throw err;
     var dbo = db.db("foodbank");
+    var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
     var myobj = tray;
-    let pos = {"zone": myobj["zone"], "bay": myobj["bay"], "tray": myobj["tray"]};
-    dbo.collection("food").count(pos, function(err, count) {
+    dbo.collection("food").updateOne(pos, {"$set": myobj}, {"upsert": true}, function(err, mongoRes) { // Use upsert to add if it does not already exist.
       if (err) throw err;
-      if (count != 0) {
-        console.log("This location already contains a tray.");
-        terminate = true;
-      }
+      console.log(mongoRes["upsertedCount"] + " document inserted");
       db.close();
     });
   });
 
-  if (terminate) {
-    res.sendStatus(400);
-    return;
-  }
-
-  MongoClient.connect(url, function(err, db) {
-    if (err) throw err;
-    var dbo = db.db("foodbank");
-    var myobj = tray;
-    dbo.collection("food").insertOne(myobj, function(err, res) {
-      if (err) throw err;
-      console.log("1 document inserted");
-      db.close();
-    });
-  });
-
-  if (terminate) {
-    res.sendStatus(400);
-    return;
-  }
-
-  res.append("Add Tray");
   res.sendStatus(200);
 }); 
 
