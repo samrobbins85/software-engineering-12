@@ -114,10 +114,10 @@ router.post('/switchTray', function(req, res, next){
     if (err) throw err;
     let dbo = db.db("foodbank");
     dbo.collection("food").update(myQueryA, myQueryB, (function(err, res) {
-      if (err) throw errl
+      if (err) throw err;
       console.log("Switched trays at Zone: " + myQueryA["zone"] + ", Bay: " + myQueryA["bay"] + ", Tray: " + myQueryA["tray"] + "and Zone: " + myQueryA["zone"] + ", Bay: " + myQueryA["bay"] + ", Tray: " + myQueryA["tray"]);
       db.close();
-    });
+    }));
     
   });
   
