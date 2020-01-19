@@ -17,7 +17,7 @@ function editTray() {
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({zone: "ABC", bay: "ABCD", tray: "AAAA", contents: "3kg", expiry: "Nov20"})
+			body: JSON.stringify({zone: "Orange", bay: "orange23", tray: "a1234", contents: "3kg", expiry: "Nov20"})
 		}
 	);
 };
@@ -29,7 +29,7 @@ function removeTray() {
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({zone: "Blue", bay: "Blue12", tray: "1234"})
+			body: JSON.stringify({zone: "Orange", bay: "orange23", tray: "a1234"})
 		}
 	);
 };
