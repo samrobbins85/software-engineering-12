@@ -39,9 +39,9 @@ function removeTray(tray, dbo) {
       console.log("Deleted tray at Zone: " + pos["zone"] + ", Bay: " + pos["bay"] + ", Tray: " + pos["tray"]);
     });
   } catch (ex) {
-    return "FAIL"
+    return "FAIL";
   }
-  return "SUCCESS"
+  return "SUCCESS";
 }
 
 // called by mongoUpdate to build request to mongoDB to switch tray
@@ -51,7 +51,7 @@ function switchTray(body, dbo) {
 
   let myQueryA = {"zone": postStart["zone"], "bay": posStart["bay"], "tray": posStart["tray"]};
   let myQueryB = {"zone": posTarget["zone"], "bay": posTarget["bay"], "tray": posTarget["tray"]};
-
+	
   // Is this correct?
   /*
   dbo.collection("food").update(myQueryA, myQueryB, (function(err, res) {
@@ -59,6 +59,22 @@ function switchTray(body, dbo) {
     console.log("Switched trays at Zone: " + myQueryA["zone"] + ", Bay: " + myQueryA["bay"] + ", Tray: " + myQueryA["tray"] + "and Zone: " + myQueryA["zone"] + ", Bay: " + myQueryA["bay"] + ", Tray: " + myQueryA["tray"]);
   }));
   */
+}
+
+function getBay(bay, dbo) {
+	// bay is json object containing zone and bay identifier. No need to specify tray
+	let pos = {"zone": bay["zone"], "bay": bay["bay"]};
+	
+	try {
+		dbo.collection("food").find(pos).toArray(function(err, res) {
+			if (err) throw err;
+			console.log(res);
+		});
+	} catch (ex) {
+		console.log(ex);
+		return "FAIL";
+	}
+	return "SUCCESS"
 }
 
 // called by routes with request body and method string
@@ -82,8 +98,9 @@ function mongoUpdate(tray, method) {
         code = removeTray(tray, dbo);
       } else if (method == "switch") {
         code = switchTray(tray, dbo);
-      }
-
+      } else if (method == "getBay") {
+				code = getBay(tray, dbo);
+			}	
       // TODO: Error handling
       if (code != "SUCCESS") {
         console.log("An error occured.")
@@ -129,6 +146,15 @@ router.post('/removeTray', function(req, res, next){
   } else {
     res.sendStatus(200);
   }
+});
+
+router.post('/getBay', function(req, res, next) {
+	let code = mongoUpdate(req.body, "getBay");
+	if (code != "SUCCESS") {
+		res.sendStatus(400);
+	}	else {
+		res.sendStatus(200);
+	}
 });
 
 // Route to switch tray

@@ -34,6 +34,18 @@ function removeTray() {
 	);
 };
 
+function getBay() {
+	fetch("/stockTake/getBay", {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({zone: "Orange", bay: "orange23"})
+	});
+}
+
 addtray();
+getBay();
 editTray();
-removeTray();
+getBay();
