@@ -10,6 +10,7 @@ function addTray(tray, dbo) {
       console.log(res["upsertedCount"] + " document inserted");
     });
   } catch (ex) {
+		console.log(ex);
     return "FAIL"
   }
   return "SUCCESS"
@@ -25,6 +26,7 @@ function editTray(tray, dbo) {
       console.log(res["modifiedCount"] + " document edited");
     });
   } catch (ex) {
+		console.log(ex);
     return "FAIL"
   }
   return "SUCCESS"
@@ -39,6 +41,7 @@ function removeTray(tray, dbo) {
       console.log("Deleted tray at Zone: " + pos["zone"] + ", Bay: " + pos["bay"] + ", Tray: " + pos["tray"]);
     });
   } catch (ex) {
+		console.log(ex);
     return "FAIL";
   }
   return "SUCCESS";
@@ -77,6 +80,37 @@ function getBay(bay, dbo) {
 	return "SUCCESS"
 }
 
+// Move Tray, not working yet.
+async function moveTray(body, dbo) {
+	console.log("This function is not working yet. Do not use.");
+	return "FAIL";
+
+	let posStart = body.posStart;
+	let posTarget = body.posTarget;
+
+	try {
+		var occupied = true;
+		await dbo.collection("food").countDocuments(posTarget, {limit:1}, function(err, res) {
+			if (err) throw err;
+			occupied = res > 0 ? true:false;
+		});
+
+		if (occupied) {
+			console.log("Position already occupied!");
+			return "FAIL_OCCUPIED";
+		}
+		await dbo.collection("food").update(posStart, {"$set":posTarget}, function(err, res) {
+			if (err) throw err;
+			console.log("Moved from " + posStart + " to " + posTarget);
+		});
+
+	} catch (ex) {
+		console.log(ex);
+		return "FAIL";
+	}
+	return "SUCCESS"
+}
+
 // called by routes with request body and method string
 function mongoUpdate(tray, method) {
   // Initialise MongoClient and define some constants
@@ -100,6 +134,8 @@ function mongoUpdate(tray, method) {
         code = switchTray(tray, dbo);
       } else if (method == "getBay") {
 				code = getBay(tray, dbo);
+			} else if (method == "moveTray") {
+				code = moveTray(tray, dbo);
 			}	
       // TODO: Error handling
       if (code != "SUCCESS") {
@@ -153,6 +189,15 @@ router.post('/getBay', function(req, res, next) {
 	if (code != "SUCCESS") {
 		res.sendStatus(400);
 	}	else {
+		res.sendStatus(200);
+	}
+});
+
+router.post('/moveTray', function(req, res, next) {
+	let code = mongoUpdate(req.body, "moveTray");
+	if (code != "SUCCESS") {
+		res.sendStatus(400);
+	} else {
 		res.sendStatus(200);
 	}
 });

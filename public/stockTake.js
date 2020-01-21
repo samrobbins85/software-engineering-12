@@ -5,7 +5,19 @@ function addtray() {
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({zone: "Orange", bay: "orange23", tray: "a1234", contents: "2kg", expiry: "Nov20"})
+		body: JSON.stringify({zone: "Orange", bay: "orange23", tray: "a1234", contents: "Beans", weight:2, expiry: "Nov20"})
+		}
+	);
+};
+
+function addAnotherTray() {
+	fetch("/stockTake/addTray", {
+			method: 'POST',
+			mode: 'cors',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		body: JSON.stringify({zone: "Orange", bay: "orange23", tray: "a6969", contents: "Soup", weight:8, expiry: "Feb20"})
 		}
 	);
 };
@@ -29,7 +41,19 @@ function removeTray() {
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({zone: "Orange", bay: "orange23", tray: "a1234"})
+			body: JSON.stringify({zone: "Orange", bay: "orange23", tray: "a1337"})
+		}
+	);
+};
+
+function removeAnotherTray() {
+	fetch("/stockTake/removeTray", {
+			method: 'POST',
+			mode: 'cors',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({zone: "Orange", bay: "orange23", tray: "a6969"})
 		}
 	);
 };
@@ -45,7 +69,28 @@ function getBay() {
 	});
 }
 
+function moveTray() {
+	fetch("/stockTake/moveTray", {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			posStart: {
+			zone: "Orange",
+			bay: "orange23",
+			tray: "a1234"
+		},
+			posTarget: {
+			zone: "Orange",
+			bay: "orange23",
+			tray: "a1337"
+		}})
+	});
+}
+
 addtray();
 getBay();
-editTray();
+moveTray();
 getBay();
