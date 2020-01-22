@@ -92,7 +92,7 @@ async function moveTray(body, dbo) {
 		var occupied = true;
 		await dbo.collection("food").countDocuments(posTarget, {limit:1}, function(err, res) {
 			if (err) throw err;
-			occupied = res > 0 ? true:false;
+			occupied = res > 0;
 		});
 
 		if (occupied) {
@@ -122,23 +122,23 @@ function mongoUpdate(tray, method) {
     MongoClient.connect(URL, function(err, db) {
       if (err) throw err;
       let dbo = db.db(DB_NAME);
-      let code = "NO_METHOD"
+      let code = "NO_METHOD";
 
-      if (method == "add") {
+      if (method === "add") {
         code = addTray(tray, dbo);
-      } else if (method == "edit") {
+      } else if (method === "edit") {
         code = editTray(tray, dbo);
-      } else if (method == "remove") {
+      } else if (method === "remove") {
         code = removeTray(tray, dbo);
-      } else if (method == "switch") {
+      } else if (method === "switch") {
         code = switchTray(tray, dbo);
-      } else if (method == "getBay") {
+      } else if (method === "getBay") {
 				code = getBay(tray, dbo);
-			} else if (method == "moveTray") {
+			} else if (method === "moveTray") {
 				code = moveTray(tray, dbo);
 			}	
       // TODO: Error handling
-      if (code != "SUCCESS") {
+      if (code !== "SUCCESS") {
         console.log("An error occured.")
       }
       db.close()
@@ -157,7 +157,7 @@ router.get('/', function(req, res, next) {
 // Route to add tray.
 router.post('/addTray', function(req, res, next){
   let code = mongoUpdate(req.body, "add");
-  if (code != "SUCCESS") {
+  if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
     res.sendStatus(200);
@@ -166,8 +166,8 @@ router.post('/addTray', function(req, res, next){
 
 // Route to edit tray
 router.post('/editTray', function(req, res, next){
-  let code = mongoUpdate(req.body, "edit")
-  if (code != "SUCCESS") {
+  let code = mongoUpdate(req.body, "edit");
+  if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
     res.sendStatus(200);
@@ -177,7 +177,7 @@ router.post('/editTray', function(req, res, next){
 // Route to remove tray
 router.post('/removeTray', function(req, res, next){
   let code = mongoUpdate(req.body, "remove");
-  if (code != "SUCCESS") {
+  if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
     res.sendStatus(200);
@@ -186,7 +186,7 @@ router.post('/removeTray', function(req, res, next){
 
 router.post('/getBay', function(req, res, next) {
 	let code = mongoUpdate(req.body, "getBay");
-	if (code != "SUCCESS") {
+	if (code !== "SUCCESS") {
 		res.sendStatus(400);
 	}	else {
 		res.sendStatus(200);
@@ -195,7 +195,7 @@ router.post('/getBay', function(req, res, next) {
 
 router.post('/moveTray', function(req, res, next) {
 	let code = mongoUpdate(req.body, "moveTray");
-	if (code != "SUCCESS") {
+	if (code !== "SUCCESS") {
 		res.sendStatus(400);
 	} else {
 		res.sendStatus(200);
