@@ -82,28 +82,27 @@ function getBay(bay, dbo) {
 
 // Move Tray, not working yet.
 async function moveTray(body, dbo) {
-	console.log("This function is not working yet. Do not use.");
-	return "FAIL";
+	//console.log("This function is not working yet. Do not use.");
+	//return "FAIL";
 
 	let posStart = body.posStart;
 	let posTarget = body.posTarget;
 
 	try {
 		var occupied = true;
-		await dbo.collection("food").countDocuments(posTarget, {limit:1}, function(err, res) {
-			if (err) throw err;
-			occupied = res > 0;
-		});
+		//await dbo.collection("food").countDocuments(posTarget, {limit:1}, async function(err, res) {
+		//	if (err) throw err;
+		//	occupied = await res > 0;
+		//});
+
+		occupied = (await dbo.collection("food").find(posTarget).limit(1).length) > 0;
+		console.log(occupied);
 
 		if (occupied) {
 			console.log("Position already occupied!");
 			return "FAIL_OCCUPIED";
 		}
-		await dbo.collection("food").update(posStart, {"$set":posTarget}, function(err, res) {
-			if (err) throw err;
-			console.log("Moved from " + posStart + " to " + posTarget);
-		});
-
+		await dbo.collection("food").update(posStart, {"$set":posTarget});
 	} catch (ex) {
 		console.log(ex);
 		return "FAIL";
@@ -119,23 +118,23 @@ function mongoUpdate(tray, method) {
   const DB_NAME = "foodbank";
 
   try {
-    MongoClient.connect(URL, function(err, db) {
+    MongoClient.connect(URL, async function(err, db) {
       if (err) throw err;
       let dbo = db.db(DB_NAME);
       let code = "NO_METHOD";
 
       if (method === "add") {
-        code = addTray(tray, dbo);
+        code = await addTray(tray, dbo);
       } else if (method === "edit") {
-        code = editTray(tray, dbo);
+        code = await editTray(tray, dbo);
       } else if (method === "remove") {
-        code = removeTray(tray, dbo);
+        code = await removeTray(tray, dbo);
       } else if (method === "switch") {
-        code = switchTray(tray, dbo);
+        code = await switchTray(tray, dbo);
       } else if (method === "getBay") {
-				code = getBay(tray, dbo);
+				code = await getBay(tray, dbo);
 			} else if (method === "moveTray") {
-				code = moveTray(tray, dbo);
+				code = await moveTray(tray, dbo);
 			}	
       // TODO: Error handling
       if (code !== "SUCCESS") {

@@ -90,7 +90,6 @@ function moveTray() {
 	});
 }
 
-addtray();
 getBay();
 moveTray();
 getBay();
