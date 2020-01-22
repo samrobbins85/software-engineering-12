@@ -90,7 +90,22 @@ function moveTray() {
 	});
 }
 
-addtray();
-getBay();
-moveTray();
-getBay();
+function addZone() {
+	fetch("/stockTake/addZone", {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({zone: "Orange", height: 2, width: 6})
+	});
+}
+
+
+
+
+addZone();
+// addtray();
+// getBay();
+// moveTray();
+// getBay();

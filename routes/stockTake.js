@@ -1,6 +1,21 @@
 var express = require('express');
 var router = express.Router();
 
+
+function getZones(dbo) {
+	const zones = dbo.collection("zones").find({});
+	console.log(zones);
+}
+
+function addZone(zone, dbo){
+	var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"],bays:[]};
+	dbo.collection("zones").insertOne(myobj, function(err, res) {
+		if (err) throw err;
+		console.log("1 document inserted");
+	});
+
+}
+
 // called by mongoUpdate to build request to mongoDB to add tray
 function addTray(tray, dbo) {
   var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
@@ -125,18 +140,30 @@ function mongoUpdate(tray, method) {
       let code = "NO_METHOD";
 
       if (method === "add") {
-        code = addTray(tray, dbo);
-      } else if (method === "edit") {
-        code = editTray(tray, dbo);
-      } else if (method === "remove") {
-        code = removeTray(tray, dbo);
-      } else if (method === "switch") {
-        code = switchTray(tray, dbo);
-      } else if (method === "getBay") {
-				code = getBay(tray, dbo);
-			} else if (method === "moveTray") {
-				code = moveTray(tray, dbo);
-			}	
+		code = addTray(tray, dbo);
+      }
+      if (method === "edit") {
+		code = editTray(tray, dbo);
+      }
+      if (method === "remove") {
+		code = removeTray(tray, dbo);
+      }
+      if (method === "switch") {
+		code = switchTray(tray, dbo);
+      }
+      if (method === "getBay") {
+		code = getBay(tray, dbo);
+      }
+      if (method === "moveTray") {
+		code = moveTray(tray, dbo);
+      }
+      if (method === "getZones"){
+      	code=getZones(dbo);
+      }
+      if (method === "addZone"){
+      	code=addZone(tray,dbo);
+      }
+
       // TODO: Error handling
       if (code !== "SUCCESS") {
         console.log("An error occured.")
@@ -151,6 +178,15 @@ function mongoUpdate(tray, method) {
 
 router.get('/', function(req, res, next) {
   res.send('This is stock taking');
+});
+
+router.get('/getZones', function (req,res,next) {
+	let zones = mongoUpdate(req.body,"getZones")
+});
+
+router.post('/addZone', function (req, res, next) {
+	let code = mongoUpdate(req.body, "addZone")
+
 });
 
 // Routes simply call mongoUpdate and send appropriate response
