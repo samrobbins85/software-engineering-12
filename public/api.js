@@ -89,40 +89,83 @@ export function moveTray(start, target) {
 	});
 }
 
+// TODO: Implement this end point
 // API call to swap two trays
 /*
 	Inputs:
-		start: JSON Object containing first tray position
-		target: JSON Object containing target position
+		first: JSON Object containing first tray position
+		second: JSON Object containing second tray position
 */
-export function swapTray(start, target) {
+export function swapTray(firstTray, secondTray) {
+	console.log("Endpoint switchTray not implemented yet!");
+	return;
 
-	fetch(STOCK_API_URL + "moveTray", {
+	fetch(STOCK_API_URL + "switchTray", {
 		method: 'POST',
 		mode: 'cors',
 		headers: {
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify({posStart: start, posTarget: target})
+		body: JSON.stringify({first: firstTray, second: secondTray})
 	});
 }
 
+// TODO: Implement this call
+// API call to add a new zone
+/*
+	Inputs:
+		
+*/
 export function addZone() {
-
+	console.log("This call has not been implemented yet!");
+	return;
 }
 
+// TODO: Implement this call
+// API call to add a new bay
+/*
+	Inputs:
+		
+*/
 export function addBay() {
-
+	console.log("This call has not been implemented yet!");
+	return;
 }
 
-export function editTray() {
-
+// API call to edit an exisiting tray
+/*
+	Inputs:
+		tray: A JSON Object representing a tray. Position must match existing tray
+*/
+export function editTray(tray) {
+	fetch(STOCK_API_URL + "editTray", {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(tray)
+	});
 }
 
+// TODO: Implement this call
+// API call to edit an existing bay
+/*
+	Inputs:
+		
+*/
 export function editBay() {
-
+	console.log("This call has not been implemented yet!");
+	return;
 }
 
+// TODO: Implement this call
+// API call to edit an exisiting zone
+/*
+	Inputs:
+		
+*/
 export function editZone() {
-
+	console.log("This call has not been implemented yet!");
+	return;
 }
