@@ -1,4 +1,4 @@
-export const STOCK_API_URL = "/stockTake/"
+const STOCK_API_URL = "/stockTake/"
 
 // TODO: Parameter checking in functions. EG. all attributes, etc.
 // TODO: Return values from fetch
@@ -8,7 +8,7 @@ export const STOCK_API_URL = "/stockTake/"
 	Inputs:
 		tray: JSON Object of tray and all attributes
 */
-export function addTray(tray) {
+function addTray(tray) {
 	fetch(STOCK_API_URL + "addTray", {
 		method: 'POST',
 		mode: 'cors',
@@ -24,7 +24,7 @@ export function addTray(tray) {
 	Inputs:
 		pos: JSON Object containing target zone, bay and tray
 */
-export function removeTray(pos) {
+function removeTray(pos) {
 	fetch(STOCK_API_URL + "removeTray", {
 		method: 'POST',
 		mode: 'cors',
@@ -40,7 +40,7 @@ export function removeTray(pos) {
 	Inputs:
 		pos: JSON Object containing target zone, bay
 */
-export function getTraysInBay(pos) {
+function getTraysInBay(pos) {
 
 	fetch(STOCK_API_URL + "getTraysInBay", {
 		method: 'POST',
@@ -58,7 +58,7 @@ export function getTraysInBay(pos) {
 	Inputs:
 		pos: JSON Object containing target zone
 */
-export function getBaysInZone(pos) {
+function getBaysInZone(pos) {
 	console.log("Endpoint getBays not implemented yet!");
 	return;
 
@@ -78,7 +78,7 @@ export function getBaysInZone(pos) {
 		start: JSON Object containing start position
 		target: JSON Object containing target position
 */
-export function moveTray(start, target) {
+function moveTray(start, target) {
 
 	fetch(STOCK_API_URL + "moveTray", {
 		method: 'POST',
@@ -97,7 +97,7 @@ export function moveTray(start, target) {
 		first: JSON Object containing first tray position
 		second: JSON Object containing second tray position
 */
-export function swapTray(firstTray, secondTray) {
+function swapTray(firstTray, secondTray) {
 	console.log("Endpoint switchTray not implemented yet!");
 	return;
 
@@ -116,7 +116,7 @@ export function swapTray(firstTray, secondTray) {
 	Inputs:
 		zone: JSON Object containing name, height and width
 */
-export function addZone(zone) {
+function addZone(zone) {
 	fetch(STOCK_API_URL + "addZone", {
 		method: 'POST',
 		mode: 'cors',
@@ -133,7 +133,7 @@ export function addZone(zone) {
 	Inputs:
 		
 */
-export function addBay() {
+function addBay() {
 	console.log("This call has not been implemented yet!");
 	return;
 }
@@ -143,7 +143,7 @@ export function addBay() {
 	Inputs:
 		tray: A JSON Object representing a tray. Position must match existing tray
 */
-export function editTray(tray) {
+function editTray(tray) {
 	fetch(STOCK_API_URL + "editTray", {
 		method: 'POST',
 		mode: 'cors',
@@ -160,7 +160,7 @@ export function editTray(tray) {
 	Inputs:
 		
 */
-export function editBay() {
+function editBay() {
 	console.log("This call has not been implemented yet!");
 	return;
 }
@@ -171,7 +171,7 @@ export function editBay() {
 	Inputs:
 		
 */
-export function editZone() {
+function editZone() {
 	console.log("This call has not been implemented yet!");
 	return;
 }
@@ -181,8 +181,8 @@ export function editZone() {
 	Inputs:
 		None
 */
-export function getZones() {
-	fetch(STOCK_API_URL + "", {
+function getZones() {
+	fetch(STOCK_API_URL + "getZones", {
 		method: 'GET',
 		mode: 'cors',
 		headers: {

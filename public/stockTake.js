@@ -1,5 +1,6 @@
+/*
 function addtray() {
-	fetch("/stockTake/addTray", {
+	fetch("/ stockTake/addTray", {
 			method: 'POST',
 			mode: 'cors',
 			headers: {
@@ -106,3 +107,4 @@ function addZone() {
 // getBay();
 // moveTray();
 // getBay();
+*/
