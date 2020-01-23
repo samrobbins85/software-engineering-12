@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 
-
 function getZones(dbo) {
 	const zones = dbo.collection("zones").find({});
 	console.log(zones);
@@ -79,7 +78,7 @@ function switchTray(body, dbo) {
   */
 }
 
-function getBay(bay, dbo) {
+function getTraysInBay(bay, dbo) {
 	// bay is json object containing zone and bay identifier. No need to specify tray
 	let pos = {"zone": bay["zone"], "bay": bay["bay"]};
 	
@@ -150,8 +149,8 @@ function mongoUpdate(tray, method) {
       if (method === "switch") {
 		code = switchTray(tray, dbo);
       }
-      if (method === "getBay") {
-		code = getBay(tray, dbo);
+      if (method === "getTraysInBay") {
+		code = getTraysInBay(tray, dbo);
       }
       if (method === "moveTray") {
 		code = moveTray(tray, dbo);
@@ -219,8 +218,8 @@ router.post('/removeTray', function(req, res, next){
   }
 });
 
-router.post('/getBay', function(req, res, next) {
-	let code = mongoUpdate(req.body, "getBay");
+router.post('/getTraysInBay', function(req, res, next) {
+	let code = mongoUpdate(req.body, "getTraysInBay");
 	if (code !== "SUCCESS") {
 		res.sendStatus(400);
 	}	else {

@@ -1,6 +1,7 @@
 export const STOCK_API_URL = "/stockTake/"
 
 // TODO: Parameter checking in functions. EG. all attributes, etc.
+// TODO: Return values from fetch
 
 // API call to add tray
 /*
@@ -41,7 +42,7 @@ export function removeTray(pos) {
 */
 export function getTraysInBay(pos) {
 
-	fetch(STOCK_API_URL + "getBay", {
+	fetch(STOCK_API_URL + "getTraysInBay", {
 		method: 'POST',
 		mode: 'cors',
 		headers: {
@@ -110,15 +111,20 @@ export function swapTray(firstTray, secondTray) {
 	});
 }
 
-// TODO: Implement this call
 // API call to add a new zone
 /*
 	Inputs:
-		
+		zone: JSON Object containing name, height and width
 */
-export function addZone() {
-	console.log("This call has not been implemented yet!");
-	return;
+export function addZone(zone) {
+	fetch(STOCK_API_URL + "addZone", {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(zone)
+	});
 }
 
 // TODO: Implement this call
@@ -168,4 +174,19 @@ export function editBay() {
 export function editZone() {
 	console.log("This call has not been implemented yet!");
 	return;
+}
+
+// API call to get all zones
+/*
+	Inputs:
+		None
+*/
+export function getZones() {
+	fetch(STOCK_API_URL + "", {
+		method: 'GET',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	})
 }

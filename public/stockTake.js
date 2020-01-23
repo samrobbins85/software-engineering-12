@@ -59,7 +59,7 @@ function removeAnotherTray() {
 };
 
 function getBay() {
-	fetch("/stockTake/getBay", {
+	fetch("/stockTake/getTraysInBay", {
 		method: 'POST',
 		mode: 'cors',
 		headers: {
@@ -101,10 +101,7 @@ function addZone() {
 	});
 }
 
-
-
-
-addZone();
+//addZone();
 // addtray();
 // getBay();
 // moveTray();
