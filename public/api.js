@@ -1,5 +1,7 @@
 const STOCK_API_URL = "/stockTake/"
 
+// REMEMBER: When calling async function you must add await before
+
 // TODO: Parameter checking in functions. EG. all attributes, etc.
 // TODO: Return values from fetch
 
@@ -7,9 +9,11 @@ const STOCK_API_URL = "/stockTake/"
 /*
 	Inputs:
 		tray: JSON Object of tray and all attributes
+	Returns:
+		code: Either "OK" or "FAIL" ("OK" on 2XX response code)
 */
-function addTray(tray) {
-	fetch(STOCK_API_URL + "addTray", {
+async function addTray(tray) {
+	let res = await fetch(STOCK_API_URL + "addTray", {
 		method: 'POST',
 		mode: 'cors',
 		headers: {
@@ -17,6 +21,11 @@ function addTray(tray) {
 		},
 		body: JSON.stringify(tray)
 	});
+
+	if (res.ok) {
+		return "OK";
+	}
+	return "FAIL";
 }
 
 // API call to remove tray
@@ -24,8 +33,8 @@ function addTray(tray) {
 	Inputs:
 		pos: JSON Object containing target zone, bay and tray
 */
-function removeTray(pos) {
-	fetch(STOCK_API_URL + "removeTray", {
+async function removeTray(pos) {
+	let res = await fetch(STOCK_API_URL + "removeTray", {
 		method: 'POST',
 		mode: 'cors',
 		headers: {
@@ -33,6 +42,11 @@ function removeTray(pos) {
 		},
 		body: JSON.stringify(pos)
 	});
+
+	if (res.ok) {
+		return "OK";
+	}
+	return "FAIL";
 }
 
 // API call to get all trays in the bay
@@ -40,9 +54,8 @@ function removeTray(pos) {
 	Inputs:
 		pos: JSON Object containing target zone, bay
 */
-function getTraysInBay(pos) {
-
-	fetch(STOCK_API_URL + "getTraysInBay", {
+async function getTraysInBay(pos) {
+	let res = await fetch(STOCK_API_URL + "getTraysInBay", {
 		method: 'POST',
 		mode: 'cors',
 		headers: {
@@ -58,7 +71,7 @@ function getTraysInBay(pos) {
 	Inputs:
 		pos: JSON Object containing target zone
 */
-function getBaysInZone(pos) {
+async function getBaysInZone(pos) {
 	console.log("Endpoint getBays not implemented yet!");
 	return;
 
@@ -78,9 +91,8 @@ function getBaysInZone(pos) {
 		start: JSON Object containing start position
 		target: JSON Object containing target position
 */
-function moveTray(start, target) {
-
-	fetch(STOCK_API_URL + "moveTray", {
+async function moveTray(start, target) {
+	let res = await fetch(STOCK_API_URL + "moveTray", {
 		method: 'POST',
 		mode: 'cors',
 		headers: {
@@ -88,6 +100,11 @@ function moveTray(start, target) {
 		},
 		body: JSON.stringify({posStart: start, posTarget: target})
 	});
+
+	if (res.ok) {
+		return "OK";
+	}
+	return "FAIL";
 }
 
 // TODO: Implement this end point
@@ -97,7 +114,7 @@ function moveTray(start, target) {
 		first: JSON Object containing first tray position
 		second: JSON Object containing second tray position
 */
-function swapTray(firstTray, secondTray) {
+async function swapTray(firstTray, secondTray) {
 	console.log("Endpoint switchTray not implemented yet!");
 	return;
 
@@ -116,8 +133,8 @@ function swapTray(firstTray, secondTray) {
 	Inputs:
 		zone: JSON Object containing name, height and width
 */
-function addZone(zone) {
-	fetch(STOCK_API_URL + "addZone", {
+async function addZone(zone) {
+	let res = await fetch(STOCK_API_URL + "addZone", {
 		method: 'POST',
 		mode: 'cors',
 		headers: {
@@ -125,6 +142,11 @@ function addZone(zone) {
 		},
 		body: JSON.stringify(zone)
 	});
+
+	if (res.ok) {
+		return "OK";
+	}
+	return "FAIL";
 }
 
 // TODO: Implement this call
@@ -133,7 +155,7 @@ function addZone(zone) {
 	Inputs:
 		
 */
-function addBay() {
+async function addBay() {
 	console.log("This call has not been implemented yet!");
 	return;
 }
@@ -143,8 +165,8 @@ function addBay() {
 	Inputs:
 		tray: A JSON Object representing a tray. Position must match existing tray
 */
-function editTray(tray) {
-	fetch(STOCK_API_URL + "editTray", {
+async function editTray(tray) {
+	let res = await fetch(STOCK_API_URL + "editTray", {
 		method: 'POST',
 		mode: 'cors',
 		headers: {
@@ -152,6 +174,11 @@ function editTray(tray) {
 		},
 		body: JSON.stringify(tray)
 	});
+
+	if (res.ok) {
+		return "OK";
+	}
+	return "FAIL";
 }
 
 // TODO: Implement this call
@@ -160,7 +187,7 @@ function editTray(tray) {
 	Inputs:
 		
 */
-function editBay() {
+async function editBay() {
 	console.log("This call has not been implemented yet!");
 	return;
 }
@@ -171,7 +198,7 @@ function editBay() {
 	Inputs:
 		
 */
-function editZone() {
+async function editZone() {
 	console.log("This call has not been implemented yet!");
 	return;
 }
@@ -181,7 +208,7 @@ function editZone() {
 	Inputs:
 		None
 */
-function getZones() {
+async function getZones() {
 	fetch(STOCK_API_URL + "getZones", {
 		method: 'GET',
 		mode: 'cors',
