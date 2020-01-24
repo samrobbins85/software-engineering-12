@@ -67,20 +67,33 @@ function removeTray(tray, dbo) {
 }
 
 // called by mongoUpdate to build request to mongoDB to switch tray
-function switchTray(body, dbo) {
-  let posStart = body.posStart;
-  let posTarget = body.posTarget;
+async function switchTray(body, dbo) {
+	console.log(body);
+	let first = body.first;
+	let second = body.second;
 
-  let myQueryA = {"zone": postStart["zone"], "bay": posStart["bay"], "tray": posStart["tray"]};
-  let myQueryB = {"zone": posTarget["zone"], "bay": posTarget["bay"], "tray": posTarget["tray"]};
-	
-  // Is this correct?
-  /*
-  dbo.collection("food").update(myQueryA, myQueryB, (function(err, res) {
-    if (err) throw err;
-    console.log("Switched trays at Zone: " + myQueryA["zone"] + ", Bay: " + myQueryA["bay"] + ", Tray: " + myQueryA["tray"] + "and Zone: " + myQueryA["zone"] + ", Bay: " + myQueryA["bay"] + ", Tray: " + myQueryA["tray"]);
-  }));
-  */
+	try {
+		const aPromise = dbo.collection("food").findOne(first);
+		const bPromise = dbo.collection("food").findOne(second);
+		const [a, b] = await Promise.all([aPromise, bPromise]);
+
+		if (a === null || b === null) {
+			console.log(e); // what is e?
+			return "FAIL";	
+		} else {
+			console.log(first);
+			console.log(second);
+			const setA = dbo.collection("food").replaceOne(first, {$set: second});
+			const setB = dbo.collection("food").replaceOne(second, {$set: first});
+
+			await Promise.all([setA, setB]);
+			
+		}
+	} catch (e) {
+		console.log(e);
+		return "FAIL";
+	}
+	return "SUCCESS";
 }
 
 async function getTraysInBay(bay, dbo) {
@@ -101,11 +114,6 @@ async function moveTray(body, dbo) {
 
 	try {
 		var occupied = true;
-		//await dbo.collection("food").countDocuments(posTarget, {limit:1}, async function(err, res) {
-		//	if (err) throw err;
-		//	occupied = await res > 0;
-		//});
-
 		occupied = (await dbo.collection("food").find(posTarget).limit(1).length) > 0;
 		console.log(occupied);
 
@@ -113,7 +121,7 @@ async function moveTray(body, dbo) {
 			console.log("Position already occupied!");
 			return "FAIL_OCCUPIED";
 		}
-		await dbo.collection("food").update(posStart, {"$set":posTarget});
+		await dbo.collection("food").update(posStart, {$set: posTarget});
 	} catch (ex) {
 		console.log(ex);
 		return "FAIL";
@@ -158,6 +166,9 @@ async function mongoUpdate(tray, method) {
     if (method === "addZone"){
       code = addZone(tray,dbo);
     }
+		if (method === "switchTray") {
+			code = await switchTray(tray, dbo);
+		}
 
     if (code.constructor === Array || code.constructor === Object) {
       db.close();
@@ -229,7 +240,7 @@ router.post('/removeTray', async function(req, res, next){
 router.post('/getTraysInBay', async function(req, res, next) {
 	let _trays = await mongoUpdate(req.body, "getTraysInBay");
 	res.setHeader('Content-Type', 'application/json');
-  res.status(200).send({trays: _trays});
+  	res.status(200).send({trays: _trays});
 });
 
 router.post('/moveTray', async function(req, res, next) {
@@ -251,6 +262,15 @@ router.post('/switchTray', async function (req, res, next) {
       Returns:
         Whether this action completed successfully or not.
     */
+	
+		let code = await mongoUpdate(req.body, "switchTray");
+		if (code !== "SUCCESS") {
+			res.sendStatus(400);
+		} else {
+			res.sendStatus(200);
+		}
+
+		/*
     let First = req.body.First;
     let Second = req.body.Second;
     let MongoClient = require('mongodb').MongoClient;
@@ -294,7 +314,7 @@ router.post('/switchTray', async function (req, res, next) {
         console.log(e);
         res.sendStatus(400);
     }
-
+	*/
 });
 
 module.exports = router;

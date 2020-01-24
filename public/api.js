@@ -98,7 +98,10 @@ async function getBaysInZone(pos) {
 		code: Either "OK" or "FAIL" ("OK" on 2XX response code)
 */
 async function moveTray(start, target) {
-    let res = await fetch(STOCK_API_URL + "moveTray", {
+    // Move is still broken. Stopping it running!
+		console.log("moveTray is not working!");
+		return;
+		let res = await fetch(STOCK_API_URL + "moveTray", {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -120,7 +123,7 @@ async function moveTray(start, target) {
 		first: JSON Object containing first tray position
 		second: JSON Object containing second tray position
 */
-async function swapTray(firstTray, secondTray) {
+async function switchTray(firstTray, secondTray) {
 
     const response = await fetch(STOCK_API_URL + "switchTray", {
         method: 'POST',
@@ -129,12 +132,12 @@ async function swapTray(firstTray, secondTray) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            First: firstTray,
-            Second: secondTray
+            first: firstTray,
+            second: secondTray
         })
     });
 
-    if (response.status === 200) {
+    if (response.ok) {
         console.log("All good in the neighbourhood");
     } else {
         alert(`There was an error code: ${response.status}, ${response.statusText}`);
