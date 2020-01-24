@@ -103,8 +103,6 @@ async function getTraysInBay(bay, dbo) {
 
 // Move Tray, not working yet.
 async function moveTray(body, dbo) {
-	//console.log("This function is not working yet. Do not use.");
-	//return "FAIL";
 
 	let posStart = body.posStart;
 	let posTarget = body.posTarget;
@@ -112,13 +110,15 @@ async function moveTray(body, dbo) {
 	try {
 		var occupied = true;
 		occupied = (await dbo.collection("food").find(posTarget).limit(1).length) > 0;
-		console.log(occupied);
 
 		if (occupied) {
 			console.log("Position already occupied!");
 			return "FAIL_OCCUPIED";
 		}
-		await dbo.collection("food").update(posStart, {$set: posTarget});
+		await dbo.collection("food").updateOne(posStart, {$set: posTarget}, function(err, res) {
+			if (err) throw err;
+
+		});
 	} catch (ex) {
 		console.log(ex);
 		return "FAIL";
@@ -141,28 +141,28 @@ async function mongoUpdate(tray, method) {
 
 		switch (method) {
 			case "add":
-  	    code = addTray(tray, dbo);
+  	    code = await addTray(tray, dbo);
   	  	break;
   	  case "edit" :
-  	    code = editTray(tray, dbo);
+  	    code = await editTray(tray, dbo);
   	  	break;
   	  case "remove":
-  	    code = removeTray(tray, dbo);
+  	    code = await removeTray(tray, dbo);
   	  	break;
   	  case "switch":
-  	    code = switchTray(tray, dbo);
+  	    code = await switchTray(tray, dbo);
   	  	break;
   	  case "getTraysInBay":
   	    code = await getTraysInBay(tray, dbo);
   	  	break;
   	  case "moveTray":
-  	    code = moveTray(tray, dbo);
+  	    code = await moveTray(tray, dbo);
   	  	break;
   	  case "getZones":
   	    code = await getZones(dbo);
   	  	break;
   	  case "addZone":
-  	    code = addZone(tray,dbo);
+  	    code = await addZone(tray,dbo);
   	  	break;
 			case "switchTray":
 				code = await switchTray(tray, dbo);

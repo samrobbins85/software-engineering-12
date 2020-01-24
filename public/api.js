@@ -99,8 +99,8 @@ async function getBaysInZone(pos) {
 */
 async function moveTray(start, target) {
     // Move is still broken. Stopping it running!
-		console.log("moveTray is not working!");
-		return;
+		//console.log("moveTray is not working!");
+		//return;
 		let res = await fetch(STOCK_API_URL + "moveTray", {
         method: 'POST',
         mode: 'cors',
