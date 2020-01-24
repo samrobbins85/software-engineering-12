@@ -68,7 +68,6 @@ function removeTray(tray, dbo) {
 
 // called by mongoUpdate to build request to mongoDB to switch tray
 async function switchTray(body, dbo) {
-	console.log(body);
 	let first = body.first;
 	let second = body.second;
 
@@ -81,8 +80,6 @@ async function switchTray(body, dbo) {
 			console.log(e); // what is e?
 			return "FAIL";	
 		} else {
-			console.log(first);
-			console.log(second);
 			const setA = dbo.collection("food").replaceOne(first, {$set: second});
 			const setB = dbo.collection("food").replaceOne(second, {$set: first});
 
@@ -142,34 +139,35 @@ async function mongoUpdate(tray, method) {
     let dbo = db.db(DB_NAME);
     let code = "NO_METHOD";
 
-    if (method === "add") {
-      code = addTray(tray, dbo);
-    }
-    if (method === "edit") {
-      code = editTray(tray, dbo);
-    }
-    if (method === "remove") {
-      code = removeTray(tray, dbo);
-    }
-    if (method === "switch") {
-      code = switchTray(tray, dbo);
-    }
-    if (method === "getTraysInBay") {
-      code = await getTraysInBay(tray, dbo);
-    }
-    if (method === "moveTray") {
-      code = moveTray(tray, dbo);
-    }
-    if (method === "getZones"){
-      code = await getZones(dbo);
-    }
-    if (method === "addZone"){
-      code = addZone(tray,dbo);
-    }
-		if (method === "switchTray") {
-			code = await switchTray(tray, dbo);
+		switch (method) {
+			case "add":
+  	    code = addTray(tray, dbo);
+  	  	break;
+  	  case "edit" :
+  	    code = editTray(tray, dbo);
+  	  	break;
+  	  case "remove":
+  	    code = removeTray(tray, dbo);
+  	  	break;
+  	  case "switch":
+  	    code = switchTray(tray, dbo);
+  	  	break;
+  	  case "getTraysInBay":
+  	    code = await getTraysInBay(tray, dbo);
+  	  	break;
+  	  case "moveTray":
+  	    code = moveTray(tray, dbo);
+  	  	break;
+  	  case "getZones":
+  	    code = await getZones(dbo);
+  	  	break;
+  	  case "addZone":
+  	    code = addZone(tray,dbo);
+  	  	break;
+			case "switchTray":
+				code = await switchTray(tray, dbo);
+				break;
 		}
-
     if (code.constructor === Array || code.constructor === Object) {
       db.close();
       return code;
