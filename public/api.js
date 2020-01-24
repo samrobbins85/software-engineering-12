@@ -32,6 +32,8 @@ async function addTray(tray) {
 /*
 	Inputs:
 		pos: JSON Object containing target zone, bay and tray
+	Returns:
+		code: Either "OK" or "FAIL" ("OK" on 2XX response code)
 */
 async function removeTray(pos) {
 	let res = await fetch(STOCK_API_URL + "removeTray", {
@@ -62,7 +64,9 @@ async function getTraysInBay(pos) {
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify(pos)
-	});
+	})
+	.then(res => res.json());
+	return res;
 }
 
 // TODO: Implement this endpoint
@@ -90,6 +94,8 @@ async function getBaysInZone(pos) {
 	Inputs:
 		start: JSON Object containing start position
 		target: JSON Object containing target position
+	Returns:
+		code: Either "OK" or "FAIL" ("OK" on 2XX response code)
 */
 async function moveTray(start, target) {
 	let res = await fetch(STOCK_API_URL + "moveTray", {
@@ -132,6 +138,8 @@ async function swapTray(firstTray, secondTray) {
 /*
 	Inputs:
 		zone: JSON Object containing name, height and width
+	Returns:
+		code: Either "OK" or "FAIL" ("OK" on 2XX response code)
 */
 async function addZone(zone) {
 	let res = await fetch(STOCK_API_URL + "addZone", {
@@ -164,6 +172,8 @@ async function addBay() {
 /*
 	Inputs:
 		tray: A JSON Object representing a tray. Position must match existing tray
+	Returns:
+		code: Either "OK" or "FAIL" ("OK" on 2XX response code)
 */
 async function editTray(tray) {
 	let res = await fetch(STOCK_API_URL + "editTray", {
@@ -207,13 +217,17 @@ async function editZone() {
 /*
 	Inputs:
 		None
+	Outputs:
+		zones: array of zone objects
 */
 async function getZones() {
-	fetch(STOCK_API_URL + "getZones", {
+	let res = await fetch(STOCK_API_URL + "getZones", {
 		method: 'GET',
 		mode: 'cors',
 		headers: {
 			'Content-Type': 'application/json'
 		}
 	})
+	.then(res => res.json());
+	return res;
 }

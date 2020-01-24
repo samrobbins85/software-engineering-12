@@ -1,18 +1,23 @@
 var express = require('express');
 var router = express.Router();
 
-function getZones(dbo) {
-	const zones = dbo.collection("zones").find({});
-	console.log(zones);
+async function getZones(dbo) {
+  const zones = await dbo.collection("zones").find({}).toArray();
+	return zones;
 }
 
 function addZone(zone, dbo){
-	var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"],bays:[]};
-	dbo.collection("zones").insertOne(myobj, function(err, res) {
-		if (err) throw err;
-		console.log("1 document inserted");
-	});
-
+  var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"],bays:[]};
+  try {
+    dbo.collection("zones").insertOne(myobj, function(err, res) {
+      if (err) throw err;
+      console.log("1 document inserted");
+    });
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL"
+  }
+  return "SUCCESS"
 }
 
 // called by mongoUpdate to build request to mongoDB to add tray
@@ -78,20 +83,12 @@ function switchTray(body, dbo) {
   */
 }
 
-function getTraysInBay(bay, dbo) {
+async function getTraysInBay(bay, dbo) {
 	// bay is json object containing zone and bay identifier. No need to specify tray
 	let pos = {"zone": bay["zone"], "bay": bay["bay"]};
-	
-	try {
-		dbo.collection("food").find(pos).toArray(function(err, res) {
-			if (err) throw err;
-			console.log(res);
-		});
-	} catch (ex) {
-		console.log(ex);
-		return "FAIL";
-	}
-	return "SUCCESS"
+
+  let trays = await dbo.collection("food").find(pos).toArray();
+	return trays;
 }
 
 // Move Tray, not working yet.
@@ -125,50 +122,55 @@ async function moveTray(body, dbo) {
 }
 
 // called by routes with request body and method string
-function mongoUpdate(tray, method) {
+async function mongoUpdate(tray, method) {
   // Initialise MongoClient and define some constants
   let MongoClient = require('mongodb').MongoClient;
   const URL = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
   const DB_NAME = "foodbank";
 
   try {
-    MongoClient.connect(URL, async function(err, db) {
-      if (err) throw err;
-      let dbo = db.db(DB_NAME);
-      let code = "NO_METHOD";
+    let db = await MongoClient.connect(URL);
 
-      if (method === "add") {
-		code = addTray(tray, dbo);
-      }
-      if (method === "edit") {
-		code = editTray(tray, dbo);
-      }
-      if (method === "remove") {
-		code = removeTray(tray, dbo);
-      }
-      if (method === "switch") {
-		code = switchTray(tray, dbo);
-      }
-      if (method === "getTraysInBay") {
-		code = getTraysInBay(tray, dbo);
-      }
-      if (method === "moveTray") {
-		code = moveTray(tray, dbo);
-      }
-      if (method === "getZones"){
-      	code=getZones(dbo);
-      }
-      if (method === "addZone"){
-      	code=addZone(tray,dbo);
-      }
+    let dbo = db.db(DB_NAME);
+    let code = "NO_METHOD";
 
-      // TODO: Error handling
-      if (code !== "SUCCESS") {
-        console.log("An error occured.")
-      }
-      db.close()
-    });
+    if (method === "add") {
+      code = addTray(tray, dbo);
+    }
+    if (method === "edit") {
+      code = editTray(tray, dbo);
+    }
+    if (method === "remove") {
+      code = removeTray(tray, dbo);
+    }
+    if (method === "switch") {
+      code = switchTray(tray, dbo);
+    }
+    if (method === "getTraysInBay") {
+      code = await getTraysInBay(tray, dbo);
+    }
+    if (method === "moveTray") {
+      code = moveTray(tray, dbo);
+    }
+    if (method === "getZones"){
+      code = await getZones(dbo);
+    }
+    if (method === "addZone"){
+      code = addZone(tray,dbo);
+    }
+
+    if (code.constructor === Array || code.constructor === Object) {
+      db.close();
+      return code;
+    }
+
+    // TODO: Error handling
+    if (code !== "SUCCESS") {
+      console.log("An error occured.")
+    }
+    db.close();
   } catch (ex) {
+    db.close()
     return "FAIL"
   }
   return "SUCCESS"
@@ -178,19 +180,25 @@ router.get('/', function(req, res, next) {
   res.send('This is stock taking');
 });
 
-router.get('/getZones', function (req,res,next) {
-	let zones = mongoUpdate(req.body,"getZones")
+router.get('/getZones', async function (req,res,next) {
+  let zone_array = await mongoUpdate(req.body,"getZones")
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).send({zones: zone_array});
 });
 
-router.post('/addZone', function (req, res, next) {
-	let code = mongoUpdate(req.body, "addZone")
-
+router.post('/addZone', async function (req, res, next) {
+	let code = await mongoUpdate(req.body, "addZone")
+  if (code !== "SUCCESS") {
+    res.sendStatus(400);
+  } else {
+    res.sendStatus(200);
+  }
 });
 
 // Routes simply call mongoUpdate and send appropriate response
 // Route to add tray.
-router.post('/addTray', function(req, res, next){
-  let code = mongoUpdate(req.body, "add");
+router.post('/addTray', async function(req, res, next){
+  let code = await mongoUpdate(req.body, "add");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
@@ -199,8 +207,8 @@ router.post('/addTray', function(req, res, next){
 }); 
 
 // Route to edit tray
-router.post('/editTray', function(req, res, next){
-  let code = mongoUpdate(req.body, "edit");
+router.post('/editTray', async function(req, res, next){
+  let code = await mongoUpdate(req.body, "edit");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
@@ -209,8 +217,8 @@ router.post('/editTray', function(req, res, next){
 }); 
 
 // Route to remove tray
-router.post('/removeTray', function(req, res, next){
-  let code = mongoUpdate(req.body, "remove");
+router.post('/removeTray', async function(req, res, next){
+  let code = await  mongoUpdate(req.body, "remove");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
@@ -218,17 +226,14 @@ router.post('/removeTray', function(req, res, next){
   }
 });
 
-router.post('/getTraysInBay', function(req, res, next) {
-	let code = mongoUpdate(req.body, "getTraysInBay");
-	if (code !== "SUCCESS") {
-		res.sendStatus(400);
-	}	else {
-		res.sendStatus(200);
-	}
+router.post('/getTraysInBay', async function(req, res, next) {
+	let _trays = await mongoUpdate(req.body, "getTraysInBay");
+	res.setHeader('Content-Type', 'application/json');
+  res.status(200).send({trays: _trays});
 });
 
-router.post('/moveTray', function(req, res, next) {
-	let code = mongoUpdate(req.body, "moveTray");
+router.post('/moveTray', async function(req, res, next) {
+	let code = await mongoUpdate(req.body, "moveTray");
 	if (code !== "SUCCESS") {
 		res.sendStatus(400);
 	} else {
