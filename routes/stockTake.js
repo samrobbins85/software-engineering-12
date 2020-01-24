@@ -237,34 +237,59 @@ router.post('/moveTray', function(req, res, next) {
 });
 
 // Route to switch tray
-router.post('/switchTray', function(req, res, next){
-  /*
-  To begin with just move tray within bay.
-    Inputs:
-      posStart : A tuple containing position of tray to move
-      posTarget : A tuple containing position of target position to move to
-    Returns:
-      Whether this action completed successfully or not.
-  */
-  let posStart = req.body.posStart;
-  let posTarget = req.body.posTarget;
-  let MongoClient = require('mongodb').MongoClient;
-  let url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
-  let myQueryA = {"zone": postStart["zone"], "bay": posStart["bay"], "tray": posStart["tray"]};
-  let myQueryB = {"zone": posTarget["zone"], "bay": posTarget["bay"], "tray": posTarget["tray"]};
-  
-  MongoClient.connect(url, function(err, db) {
-    if (err) throw err;
-    let dbo = db.db("foodbank");
-    dbo.collection("food").update(myQueryA, myQueryB, (function(err, res) {
-      if (err) throw err;
-      console.log("Switched trays at Zone: " + myQueryA["zone"] + ", Bay: " + myQueryA["bay"] + ", Tray: " + myQueryA["tray"] + "and Zone: " + myQueryA["zone"] + ", Bay: " + myQueryA["bay"] + ", Tray: " + myQueryA["tray"]);
-      db.close();
-    }));
-    
-  });
-  
-  res.sendStatus(200);
-});  
+router.post('/switchTray', async function (req, res, next) {
+    /*
+    To begin with just move tray within bay.
+      Inputs:
+        posStart : A tuple containing position of tray to move
+        posTarget : A tuple containing position of target position to move to
+      Returns:
+        Whether this action completed successfully or not.
+    */
+    let First = req.body.First;
+    let Second = req.body.Second;
+    let MongoClient = require('mongodb').MongoClient;
+    let url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
+    let myQueryA = {"zone": First["zone"], "bay": First["bay"], "tray": First["tray"]};
+    let myQueryB = {"zone": Second["zone"], "bay": Second["bay"], "tray": Second["tray"]};
+
+
+    // todo fixme add proper error handling to this
+    try {
+
+        const db = await MongoClient.connect(url, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+
+        const dbo = db.db("foodbank");
+
+        const aPromise = dbo.collection("food").findOne(myQueryA);
+        const bPromise = dbo.collection("food").findOne(myQueryB);
+
+        const [a, b] = await Promise.all([aPromise, bPromise]);
+
+        if (a === null || b === null) {
+            console.log(e);
+            res.sendStatus(400);
+        } else {
+
+            const setA = dbo.collection("food").replaceOne(myQueryA, {
+                $set: {...myQueryB}
+            });
+            const setB = dbo.collection("food").replaceOne(myQueryB, {
+                $set: {...myQueryA}
+            });
+
+            await Promise.all([setA, setB]);
+
+            res.sendStatus(200);
+        }
+    } catch (e) {
+        console.log(e);
+        res.sendStatus(400);
+    }
+
+});
 
 module.exports = router;

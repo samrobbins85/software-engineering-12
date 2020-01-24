@@ -1,4 +1,4 @@
-/*
+
 function addtray() {
 	fetch("/ stockTake/addTray", {
 			method: 'POST',
@@ -102,9 +102,33 @@ function addZone() {
 	});
 }
 
-//addZone();
-// addtray();
-// getBay();
-// moveTray();
-// getBay();
-*/
+async function switchTray() {
+	const response =  await fetch("/stockTake/switchTrayasdasdasd", {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			First: {
+				zone: "Orangehhhhhhhhhhhhh",
+				bay: "orange235555555",
+				tray: "a1234jjjjjjjjjjjjjjjjjj"
+			},
+			Second: {
+				zone: "Orange",
+				bay: "orange",
+				tray: "a1337"
+			}
+		})
+	});
+
+	if (response.status === 200) {
+		console.log("All good in the neighbourhood");
+	} else {
+		alert(`There was an error code: ${response.status}, ${response.statusText}`);
+	}
+
+}
+
+switchTray();
