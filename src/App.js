@@ -4,6 +4,7 @@ import './css/react-sidenav.css';
 import CustomSideBar from './Components/CustomSideBar'
 import TopBar from './Components/TopBar'
 import { BrowserRouter as Router, Route } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Account from './Components/Account/Account.js'
 import Designer from './Components/Designer/Designer.js'
@@ -33,6 +34,12 @@ class App extends Component {
     return (
       <Router>
         <Grommet theme={theme} full>
+          <link
+              rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+              crossOrigin="anonymous"
+          />
           <ResponsiveContext.Consumer>
             {size => (
               <Box fill>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import BayView from "./BayView";
 class StockTake extends Component {
 
 	render() {
@@ -9,6 +10,7 @@ class StockTake extends Component {
 					but ill be working on this since it is the most react-yy component.
 				</li>
 				<li>This will be the first thing i work on </li>
+				<BayView/>
 			</div>
 
 		)
