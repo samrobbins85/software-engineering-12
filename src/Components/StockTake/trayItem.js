@@ -59,12 +59,11 @@ class TrayItem extends Component {
 		return (
 			<div style={this.state.selected === true ? {borderRadius:'10px',borderStyle: 'solid', borderColor:'#2196f3'}:{}}>
 			<Card onClick={this.handleClick} >
-
 				<Card.Body >
 					<Card.Title>{this.props.i.title}</Card.Title>
 					<Card.Text>
 						<div> <Badge variant="light"> Weight:{this.props.i.weight == null ? 'N/A':this.props.i.weight}</Badge></div>
-						<div> <Badge variant={this.props.y< ((parseInt(this.props.i.expiry.slice((this.props.i.expiry.length -4),this.props.i.expiry.length))) - 1900) ? "warning":"danger"}> Expires: {this.props.i.expiry}</Badge></div>
+						<div> <Badge variant={this.props.y< ((parseInt(this.props.i.expiry.slice((this.props.i.expiry.length -4),this.props.i.expiry.length))) - 1900) ? (this.props.y< ((parseInt(this.props.i.expiry.slice((this.props.i.expiry.length -4),this.props.i.expiry.length))) - 1901)  ? "success":"warning"):"danger"}> Expires: {this.props.i.expiry}</Badge></div>
 
 					</Card.Text>
 				</Card.Body>
