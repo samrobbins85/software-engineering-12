@@ -157,7 +157,8 @@ class Home extends Component {
 									<td>Table cell</td>
 								</tr>
 								</tbody>
-							</Table></Col>
+							</Table>
+							</Col>
 
 					</Row>
 
