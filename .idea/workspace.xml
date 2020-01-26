@@ -3,10 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c6a502d0-315b-44dd-9ca0-abd2e185f2a4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Account/Account.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Account/Account.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/CustomSideBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/CustomSideBar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Components/StockTake/BayView.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/StockTake/BayView.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/StockTake/StockTake.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/StockTake/StockTake.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Components/StockTake/trayItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/StockTake/trayItem.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -20,11 +17,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Components/StockTake/BayView.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="344">
-              <caret line="84" column="47" selection-start-line="84" selection-start-column="47" selection-end-line="84" selection-end-column="47" />
+            <state relative-caret-position="174">
+              <caret line="53" lean-forward="true" selection-start-line="53" selection-end-line="53" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
               </folding>
@@ -35,8 +32,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Components/StockTake/trayItem.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="731">
-              <caret line="43" column="20" selection-start-line="43" selection-start-column="17" selection-end-line="43" selection-end-column="20" />
+            <state relative-caret-position="459">
+              <caret line="66" column="157" selection-start-line="66" selection-start-column="157" selection-end-line="66" selection-end-column="157" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
               </folding>
@@ -44,14 +41,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Components/StockTake/StockTake.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="8" column="16" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="16" />
+            <state relative-caret-position="187">
+              <caret line="11" selection-start-line="11" selection-end-line="11" />
               <folding>
                 <element signature="e#0#41#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Components/Home/Home.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="357">
+              <caret line="21" column="20" lean-forward="true" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -143,11 +149,11 @@
         <option value="$PROJECT_DIR$/src/App.js" />
         <option value="$PROJECT_DIR$/src/css/react-sidenav.css" />
         <option value="$PROJECT_DIR$/src/Components/StockTake/,.js" />
-        <option value="$PROJECT_DIR$/src/Components/StockTake/trayItem.js" />
         <option value="$PROJECT_DIR$/src/Components/CustomSideBar.js" />
         <option value="$PROJECT_DIR$/src/Components/Account/Account.js" />
-        <option value="$PROJECT_DIR$/src/Components/StockTake/BayView.js" />
         <option value="$PROJECT_DIR$/src/Components/StockTake/StockTake.js" />
+        <option value="$PROJECT_DIR$/src/Components/StockTake/trayItem.js" />
+        <option value="$PROJECT_DIR$/src/Components/StockTake/BayView.js" />
       </list>
     </option>
   </component>
@@ -186,6 +192,13 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="Components" type="462c0819:PsiDirectoryNode" />
               <item name="Account" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="software-engineering-12" type="b2602c69:ProjectViewProjectNode" />
+              <item name="software-engineering-12" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Components" type="462c0819:PsiDirectoryNode" />
+              <item name="Home" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="software-engineering-12" type="b2602c69:ProjectViewProjectNode" />
@@ -249,18 +262,19 @@
       <workItem from="1579880523915" duration="5649000" />
       <workItem from="1579904543893" duration="11673000" />
       <workItem from="1579968843046" duration="444000" />
-      <workItem from="1579970067272" duration="28922000" />
+      <workItem from="1579970067272" duration="29829000" />
+      <workItem from="1580004204176" duration="2698000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="74370000" />
+    <option name="totallyTimeSpent" value="77975000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="22" width="1936" height="1066" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13856691" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13856691" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="npm" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
@@ -275,7 +289,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="TypeScript" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.301179" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.301179" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -359,13 +373,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Components/Account/Order.js" />
-    <entry file="file://$PROJECT_DIR$/src/Components/Home/Home.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="21" column="20" lean-forward="true" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Components/Orders/Orders.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
@@ -390,16 +397,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/App.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="41" column="12" selection-start-line="41" selection-start-column="12" selection-end-line="41" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/css/react-sidenav.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
@@ -407,16 +404,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Components/StockTake/,.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="511">
-          <caret line="35" selection-start-line="35" selection-end-line="49" selection-end-column="58" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Components/StockTake/,.js" />
     <entry file="file://$PROJECT_DIR$/src/Components/CustomSideBar.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
@@ -444,10 +432,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/App.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="41" column="12" selection-start-line="41" selection-start-column="12" selection-end-line="41" selection-end-column="12" />
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Components/Home/Home.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="21" column="20" lean-forward="true" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Components/StockTake/StockTake.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Components/StockTake/trayItem.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="43" column="20" selection-start-line="43" selection-start-column="17" selection-end-line="43" selection-end-column="20" />
+        <state relative-caret-position="459">
+          <caret line="66" column="157" selection-start-line="66" selection-start-column="157" selection-end-line="66" selection-end-column="157" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
           </folding>
@@ -456,20 +471,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Components/StockTake/BayView.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="84" column="47" selection-start-line="84" selection-start-column="47" selection-end-line="84" selection-end-column="47" />
+        <state relative-caret-position="174">
+          <caret line="53" lean-forward="true" selection-start-line="53" selection-end-line="53" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Components/StockTake/StockTake.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="16" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#41#0" expanded="true" />
           </folding>
         </state>
       </provider>

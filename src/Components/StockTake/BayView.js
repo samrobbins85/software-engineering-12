@@ -63,7 +63,13 @@ class BayView extends Component {
 		}
 		for(let y = 0; y < this.selectedList.length; y++ ){
 			if(this.selectedList[y] === true){
-				temp1[y].expiry = ef;
+				if (Number.isInteger(ef)){
+					temp1[y].expiry = ef.toString()
+				}else{
+					if (parseFloat(temp1[y].expiry)){
+						temp1[y].expiry =  ef +" "+temp1[y].expiry;
+					}
+				}
 			}
 		}
 		let temp = [];
@@ -207,22 +213,89 @@ class BayView extends Component {
 								<Row style={{paddingTop: '10px'}}>
 									<Col>
 										<Box align="center" height="60px" width="130px">
-											<Button label="2019" fill onClick={() => {this.performExpiryChange("2019")}} />
+											<Button label="January " fill onClick={() => {this.performExpiryChange("January")}} />
 										</Box>
 									</Col>
 									<Col>
 										<Box align="center" height="60px" width="130px">
-											<Button label="2020" fill onClick={() => {this.performExpiryChange("2020")}} />
+											<Button label="February" fill onClick={() => {this.performExpiryChange("February")}} />
 										</Box>
 									</Col>
 									<Col>
 										<Box align="center" height="60px" width="130px">
-											<Button label="2021" fill onClick={() => {this.performExpiryChange("2021")}} />
+											<Button label="March" fill onClick={() => {this.performExpiryChange("March")}} />
 										</Box>
 									</Col>
 									<Col>
 										<Box align="center" height="60px" width="130px">
-											<Button label="2022" fill onClick={() => {this.performExpiryChange("2022")}} />
+											<Button label="April" fill onClick={() => {this.performExpiryChange("April")}} />
+										</Box>
+									</Col>
+								</Row>
+								<Row style={{paddingTop: '10px'}}>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="May " fill onClick={() => {this.performExpiryChange("May")}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="June" fill onClick={() => {this.performExpiryChange("June")}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="July" fill onClick={() => {this.performExpiryChange("July")}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="August" fill onClick={() => {this.performExpiryChange("August")}} />
+										</Box>
+									</Col>
+								</Row>
+								<Row style={{paddingTop: '10px'}}>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="September " fill onClick={() => {this.performExpiryChange("September")}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="October" fill onClick={() => {this.performExpiryChange("October")}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="November" fill onClick={() => {this.performExpiryChange("November")}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="December" fill onClick={() => {this.performExpiryChange("December")}} />
+										</Box>
+									</Col>
+								</Row>
+
+								<Row style={{paddingTop: '10px'}}>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="2019" fill onClick={() => {this.performExpiryChange(2019)}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="2020" fill onClick={() => {this.performExpiryChange(2020)}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="2021" fill onClick={() => {this.performExpiryChange(2021)}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="2022" fill onClick={() => {this.performExpiryChange(2022)}} />
 										</Box>
 									</Col>
 								</Row>

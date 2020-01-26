@@ -64,7 +64,7 @@ class TrayItem extends Component {
 					<Card.Title>{this.props.i.title}</Card.Title>
 					<Card.Text>
 						<div> <Badge variant="light"> Weight:{this.props.i.weight == null ? 'N/A':this.props.i.weight}</Badge></div>
-						<div> <Badge variant={this.props.y<(this.props.i.expiry - 1900) ? "warning":"danger"}> Expires:{this.props.i.expiry}</Badge></div>
+						<div> <Badge variant={this.props.y< ((parseInt(this.props.i.expiry.slice((this.props.i.expiry.length -4),this.props.i.expiry.length))) - 1900) ? "warning":"danger"}> Expires: {this.props.i.expiry}</Badge></div>
 
 					</Card.Text>
 				</Card.Body>
