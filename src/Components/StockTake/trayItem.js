@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import {Badge, Card} from "react-bootstrap";
 
 class TrayItem extends Component {
 	constructor(props) {
 		super(props);
-		console.log(props)
-
+		this.state = {selected:false};
+		this.handleClick = this.handleClick.bind(this);
 	}
+
 
 	componentWillMount() {
 
@@ -23,9 +23,12 @@ class TrayItem extends Component {
 
 	shouldComponentUpdate(nextProps, nextState) {
 
+		return true
 	}
 
 	componentWillUpdate(nextProps, nextState) {
+
+
 
 	}
 
@@ -36,13 +39,28 @@ class TrayItem extends Component {
 	componentWillUnmount() {
 
 	}
+	handleClick = ()=>{
+		if (this.state.selected === false) {
+			this.setState({selected : true});
+		}else{
+			this.setState({selected : false});
+		}
+		this.sendData()
+		// this.onChange(this.state.selected);
+
+	};
+
+	sendData = () => {
+		this.props.parentCallback({id:this.props.i.id,selected:!this.state.selected});
+	};
 
 	render() {
+
 		return (
+			<div style={this.state.selected === true ? {borderRadius:'10px',borderStyle: 'solid', borderColor:'#2196f3'}:{}}>
+			<Card onClick={this.handleClick} >
 
-			<Card>
-
-				<Card.Body>
+				<Card.Body >
 					<Card.Title>{this.props.i.title}</Card.Title>
 					<Card.Text>
 						<div> <Badge variant="light"> Weight:{this.props.i.weight == null ? 'N/A':this.props.i.weight}</Badge></div>
@@ -54,6 +72,7 @@ class TrayItem extends Component {
 					<small className="text-muted">Last Counted: 1 week ago</small>
 				</Card.Footer>
 			</Card>
+			</div>
 
 		);
 	}

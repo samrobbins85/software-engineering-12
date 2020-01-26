@@ -11,7 +11,7 @@ class CustomSideBar extends Component {
 		showSidebar: true,
 	};
 	render() {
-		const { showSidebar } = this.state;
+		// const { showSidebar } = this.state;
 		return (
 			<SideNav
 				onSelect={(selected) => {console.log(selected)}}>

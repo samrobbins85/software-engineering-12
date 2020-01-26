@@ -1,35 +1,252 @@
 import React, {Component} from 'react';
-import {Badge, Card, CardDeck} from "react-bootstrap";
+import { CardDeck,Row,Col,Container} from "react-bootstrap";
 import TrayItem from "./trayItem";
+
+import {Box, FormField, Grommet, Tab, Tabs, Text, Form, Button} from "grommet";
+import {grommet} from "grommet/themes";
+import {Calculator,Schedule , Cafeteria} from "grommet-icons";
+
+
+const RichTabTitle = ({ icon, label }) => (
+	<Box direction="row" align="center" gap="xsmall" margin="xsmall">
+		{icon}
+		<Text size="small">
+			<strong>{label}</strong>
+		</Text>
+	</Box>
+);
+
 
 
 class BayView extends Component {
 
 	constructor(props) {
 		super(props);
-		this.x = [[{title:'Tinned Apples', expiry:'2020',weight:'2000kg'},{title:'Tinned Apples', expiry:'2021',weight:'2000kg'},{title:'Tinned Apples', expiry:'2020',weight:null}],[{title:'Tinned Apples', expiry:'2020',weight:'2000kg'},{title:'Tinned Apples', expiry:'2021',weight:'2000kg'},{title:'Tinned Apples', expiry:'2020',weight:null}],[{title:'Tinned Apples', expiry:'2020',weight:'2000kg'},{title:'Tinned Apples', expiry:'2020',weight:'2000kg'},{title:'Tinned Apples', expiry:'2021',weight:null}]];
+		this.state = {x:[[{id:1,title:'Tinned Apples', expiry:'2020',weight:'2000kg'},{id:2,title:'Tinned Apples', expiry:'2021',weight:'2000kg'},{id:3,title:'Tinned Apples', expiry:'2020',weight:null}],[{id:4,title:'Tinned Apples', expiry:'2020',weight:'2000kg'},{id:5,title:'Tinned Apples', expiry:'2021',weight:'2000kg'},{id:6,title:'Tinned Apples', expiry:'2020',weight:null}],[{id:7,title:'Tinned Apples', expiry:'2020',weight:'2000kg'},{id:8,title:'Tinned Apples', expiry:'2020',weight:'2000kg'},{id:9,title:'Tinned Apples', expiry:'2021',weight:null}]]}
 		this.y = new Date();
 		this.y = this.y.getYear();
+		this.selectedList =  [false,false,false,false,false,false,false,false,false]
 	}
+
+	callbackFunction = (childData) => {
+		this.selectedList[childData.id -1] = childData.selected;
+	};
+
+	performCategoryChange = (ef) =>{
+
+		let temp1= [];
+		for(let y = 0;y < this.state.x.length; y++){
+			temp1.push(this.state.x[y][0]);
+			temp1.push(this.state.x[y][1]);
+			temp1.push(this.state.x[y][2]);
+		}
+		for(let y = 0; y < this.selectedList.length; y++ ){
+			if(this.selectedList[y] === true){
+				temp1[y].title = ef;
+			}
+		}
+		let temp = [];
+		for(let y = 0; y < 9; y+=3 ) {
+
+			temp.push([temp1[y],temp1[y+1],temp1[y+2]])
+		}
+		this.setState({x:temp})
+
+	};
+	performExpiryChange = (ef) =>{
+
+		let temp1= [];
+		for(let y = 0;y < this.state.x.length; y++){
+			temp1.push(this.state.x[y][0]);
+			temp1.push(this.state.x[y][1]);
+			temp1.push(this.state.x[y][2]);
+		}
+		for(let y = 0; y < this.selectedList.length; y++ ){
+			if(this.selectedList[y] === true){
+				temp1[y].expiry = ef;
+			}
+		}
+		let temp = [];
+		for(let y = 0; y < 9; y+=3 ) {
+
+			temp.push([temp1[y],temp1[y+1],temp1[y+2]])
+		}
+		this.setState({x:temp})
+
+	};
+
+	performWeightChange = (ef) =>{
+
+		let new_weight;
+
+		if(ef.weight === ""){
+			new_weight = null
+		}else{
+			new_weight = parseFloat(ef.weight);
+			new_weight = new_weight.toString()+'kg'
+		}
+
+		let temp1= [];
+		for(let y = 0;y < this.state.x.length; y++){
+			temp1.push(this.state.x[y][0]);
+			temp1.push(this.state.x[y][1]);
+			temp1.push(this.state.x[y][2]);
+		}
+		for(let y = 0; y < this.selectedList.length; y++ ){
+			if(this.selectedList[y] === true){
+				temp1[y].weight =  new_weight;
+			}
+		}
+		let temp = [];
+		for(let y = 0; y < 9; y+=3 ) {
+
+			temp.push([temp1[y],temp1[y+1],temp1[y+2]])
+		}
+		this.setState({x:temp})
+
+	};
+
 
 
 	render() {
 
 
-		return (
-			<div style={{background:'#f4f4f4',padding:'20px',borderRadius:'20px'}}>
-				{this.x.map(z => {
-					return <CardDeck>
+		return (<div style={{  position: 'absolute',
+				left: '50%',
+				top: '50%',
+				transform: 'translate(-50%, -50%)'}}>
+			<div style={{background:'#f4f4f4',padding:'20px',borderRadius:'20px' }}>
+				{this.state.x.map(z => {
+					return <CardDeck style={{padding:'20px'}}>
 
 						{z.map(i => {
-							return <TrayItem i ={i} y ={this.y}/>
+							return <TrayItem i ={i} y ={this.y} parentCallback = {this.callbackFunction}/>
 
 						})}
 						</CardDeck>
 				})}
 			</div>
+				<div>
+				<Grommet theme={grommet}>
+					<Tabs>
+						<Tab title={<RichTabTitle icon={<Cafeteria color = "#f44336"/>} label="Category" />}>
+							<Container>
+								<Row style={{paddingTop: '10px'}}>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Tinned Fruit" fill onClick={()=> {this.performCategoryChange('Tinned Fruit')}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Tinned Beans" fill onClick={() => {this.performCategoryChange("Tinned Beans")}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Tinned Soup" fill onClick={() => {this.performCategoryChange('Tinned Soup')}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Tinned Sauce" fill onClick={() => {this.performCategoryChange('Tinned Sauce')}} />
+										</Box>
+									</Col>
+								</Row>
+								<Row style={{paddingTop: '10px'}}>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Cereal" fill onClick={() => {this.performCategoryChange('Cereal')}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Pasta" fill onClick={() => {this.performCategoryChange('Pasta')}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Juice" fill onClick={() => {this.performCategoryChange('Juice')}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Milk" fill onClick={() => {this.performCategoryChange('Milk')}} />
+										</Box>
+									</Col>
+								</Row>
+								<Row style={{paddingTop: '10px'}}>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Toiletries" fill onClick={() => {this.performCategoryChange('Toiletries')}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Nappies" fill onClick={() => {this.performCategoryChange('Nappies')}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Feminine Products" fill onClick={() => {this.performCategoryChange('Feminine Products')}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="Cleaning Products" fill onClick={() => {this.performCategoryChange('Cleaning Products')}} />
+										</Box>
+									</Col>
+
+
+								</Row>
+
+							</Container>
+						</Tab>
+						<Tab title={<RichTabTitle icon={<Schedule color = "#f44336"/>} label="Expiry" />}>
+							<Container>
+								<Row style={{paddingTop: '10px'}}>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="2019" fill onClick={() => {this.performExpiryChange("2019")}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="2020" fill onClick={() => {this.performExpiryChange("2020")}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="2021" fill onClick={() => {this.performExpiryChange("2021")}} />
+										</Box>
+									</Col>
+									<Col>
+										<Box align="center" height="60px" width="130px">
+											<Button label="2022" fill onClick={() => {this.performExpiryChange("2022")}} />
+										</Box>
+									</Col>
+								</Row>
+							</Container>
+						</Tab>
+						<Tab title={<RichTabTitle icon={<Calculator color = "#f44336"/>} label="Weight" />}>
+							<Form
+								onReset={event => console.log(event)}
+								   onSubmit={({ value }) => this.performWeightChange(value)}
+							>
+							<FormField label="Weight" name="weight"  />
+							<Box direction="row" justify="between" margin={{ top: 'medium' }}>
+								<Button type="submit" label="Update" primary />
+							</Box>
+							</Form>
+						</Tab>
+					</Tabs>
+				</Grommet>
+				</div>
+
+			</div>
 		);
 	}
 }
+
 
 export default BayView;
