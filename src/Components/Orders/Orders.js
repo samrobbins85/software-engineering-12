@@ -296,7 +296,7 @@ class Orders extends Component {
 										</Text>
 										<Text size="small">% </Text>
 									</Box>
-								</Stack>  <Text  weight="bold" size="small">Of Orders have been received For this Rotation </Text>
+								</Stack>  <Text  weight="bold" size="small" style={{textAlign:'-webkit-center'}}>Of Orders have been received For this Rotation </Text>
 							</Box></Grommet>
 
 					</Col>

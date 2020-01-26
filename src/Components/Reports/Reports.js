@@ -152,7 +152,7 @@ class Reports extends Component {
 										</Text>
 										<Text size="small">% </Text>
 									</Box>
-								</Stack>  <Text  weight="bold" size="small"> of Stock take completed </Text>
+								</Stack>  <Text  weight="bold" size="small" style={{textAlign:'-webkit-center'}}> of Stock take completed </Text>
 							</Box></Grommet>
 
 
