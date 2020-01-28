@@ -4,6 +4,8 @@ import {Alert, Col, Container, Jumbotron, Row} from "react-bootstrap";
 import {SettingsOption, Add, Trash, DocumentExcel} from "grommet-icons";
 import {grommet} from "grommet/themes";
 
+
+
 class Designer extends Component {
 	constructor(props){
 		super(props);
@@ -49,7 +51,7 @@ class Designer extends Component {
 				<Row>
 					<Col md={9}>
 			<div>
-				<p style={{color:'#ffffff'}}>sduasgfhrsilfgho9shdigjiehtodfpugjdouirfud\o;sflhdiofghsdlnfkhzdoihfnddghiodnfnsdl\kfniodhjsgjk;fbgiuldfflesbfuidfbvundjvbsdliubflakhsdbfiuldfbguibdiubg</p>
+				<p style={{color:'#ffffff'}}>sduasgfhrsilfgho9shdigjiehtodfpugjdouirfud\o;sflhdiofghsdlnfkhzdvbsdliubflakhsdbfiuldfbguibdiubg</p>
 				<Jumbotron >
 					<Container>
 						<h1>Warehouse Designer</h1>

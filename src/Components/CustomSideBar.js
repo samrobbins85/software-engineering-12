@@ -64,7 +64,7 @@ class CustomSideBar extends Component {
 
 					<NavItem eventKey="account">
 						<NavIcon>
-							<Button icon={<User color = "#ffffff"/>} style={{ fontSize: '1.75em' }} href={'/ac'} />
+							<Button icon={<User color = "#ffffff"/>} style={{ fontSize: '1.75em' }} href={'/'} />
 						</NavIcon>
 						<NavText>
 							My Account

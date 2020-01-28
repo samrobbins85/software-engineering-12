@@ -117,10 +117,10 @@ class BayView extends Component {
 	render() {
 
 
-		return (<div style={{  position: 'absolute',
+		return (<div style={{
+
 				left: '50%',
-				top: '50%',
-				transform: 'translate(-50%, -50%)'}}>
+				transform: 'translate(20%, 5%)'}}>
 			<div style={{background:'#f4f4f4',padding:'20px',borderRadius:'20px' }}>
 				{this.state.x.map(z => {
 					return <CardDeck style={{padding:'20px'}}>

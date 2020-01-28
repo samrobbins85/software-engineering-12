@@ -82,43 +82,26 @@ class Reports extends Component {
 
 								</AccordionPanel>
 								<AccordionPanel label="Zone B">
-									<Box pad="medium" background="light-2">
-										<Text>Two</Text>
-									</Box>
 								</AccordionPanel>
 								<AccordionPanel label="Zone C">
-									<Box pad="medium" background="light-2">
-										<Text>One</Text>
-									</Box>
 								</AccordionPanel>
 								<AccordionPanel label="Zone D">
-									<Box pad="medium" background="light-2">
-										<Text>One</Text>
-									</Box>
 								</AccordionPanel>
 								<AccordionPanel label="Zone E">
-									<Box pad="medium" background="light-2">
-										<Text>One</Text>
-									</Box>
 								</AccordionPanel>
 								<AccordionPanel label="Zone F">
-									<Box pad="medium" background="light-2">
-										<Text>One</Text>
-									</Box>
 								</AccordionPanel>
-
 							</Accordion>
-
 						</div>
 					</Col>
 					<Col md={3}>
 						<li style={{color:'#ffffff'}}>Hello World </li>
 
 						<li style={{color:'#ffffff'}}>Hello World </li>
-						<Alert  variant={'success'} style={{alignContent:'left'}}>
+						<Alert  variant={'success'} style={{alignContent:'left'}} >
 							<Row>
 								<Col>
-									<DocumentExcel color = "#000066"/>
+									<DocumentExcel color = "#000066" href='C:/Users/Mo/Documents/GitHub/software-engineering-12/public/Book1.xlsx'/>
 								</Col>
 
 								Download Most recent stock take
@@ -161,42 +144,56 @@ class Reports extends Component {
 						<Table responsive>
 							<thead>
 							<tr>
-								<th>#</th>
-								<th>Table heading</th>
-								<th>Table heading</th>
-								<th>Table heading</th>
-								<th>Table heading</th>
-								<th>Table heading</th>
-								<th>Table heading</th>
+								<th>Category</th>
+								<th>Tray quantity</th>
+								<th>Weighed tray weight</th>
+								<th>Since previous stock take</th>
+								<th>Average Expiry date</th>
+								<th>Trays expiring within 6 months</th>
+								<th>Trays expiring within 6-12 months</th>
+								<th>Trays expiring within 12+ months</th>
 							</tr>
 							</thead>
 							<tbody>
 							<tr>
-								<td>1</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
+								<td>Baked Beans</td>
+								<td>70</td>
+								<td>410kg</td>
+								<td>▲ 4 trays </td>
+								<td>January 2022</td>
+								<td>20</td>
+								<td>35</td>
+								<td>15</td>
 							</tr>
 							<tr>
-								<td>2</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
+								<td>Tinned Soup</td>
+								<td>30</td>
+								<td>290kg</td>
+								<td>▲ 4 trays </td>
+								<td>April 2021</td>
+								<td>8</td>
+								<td>7</td>
+								<td>15</td>
 							</tr>
 							<tr>
+								<td>Pasta</td>
+								<td>15</td>
+								<td>40kg</td>
+								<td>▼ 2 trays </td>
+								<td>February 2023</td>
 								<td>3</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
-								<td>Table cell</td>
+								<td>7</td>
+								<td>5</td>
+							</tr>
+							<tr>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
 							</tr>
 							</tbody>
 						</Table>

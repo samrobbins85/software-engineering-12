@@ -158,99 +158,42 @@ class Orders extends Component {
 
 					</AccordionPanel>
 					<AccordionPanel label="Consett">
-						<Box pad="medium" background="light-2">
-							<Text>Two</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Aykley Heads">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Moorepeth">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Langley Moor">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Spenymoor">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Ferry hill">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Brancepeth">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Sherburn">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Shincliffe">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Coxhoe">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Newton Ayecliffe">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Washington">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Sunderland">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Mordon">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Chester-le-Street">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Gateshead">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="South Shields">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Murton">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 					<AccordionPanel label="Peterlee">
-						<Box pad="medium" background="light-2">
-							<Text>One</Text>
-						</Box>
 					</AccordionPanel>
 				</Accordion>
 
