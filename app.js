@@ -1,3 +1,4 @@
+var bodyParser = require('body-parser');
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -6,21 +7,31 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+let syncRouter = require('./routes/sync');
+let adminRouter = require('./routes/admin')
+let reportsRouter = require('./routes/reports')
+let stockTakeRouter = require('./routes/stockTake')
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
+//app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/sync', syncRouter);
+app.use('/admin', adminRouter);
+app.use('/reports', reportsRouter);
+app.use('/stockTake', stockTakeRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
