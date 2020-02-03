@@ -1,3 +1,25 @@
+React_App/node_modules/*
+React_App/.pnp
+React_App/.pnp.js
+
+# testing
+React_App/coverage
+
+# production
+React_App/build
+
+# misc
+React_App/.DS_Store
+React_App/.env.local
+React_App/.env.development.local
+React_App/.env.test.local
+React_App/.env.production.local
+
+React_App/npm-debug.log*
+React_App/yarn-debug.log*
+React_App/yarn-error.log*
+React_App/.idea
+
 node_modules/*
 .idea
 
