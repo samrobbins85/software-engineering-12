@@ -55,6 +55,10 @@ async function removeTray(pos) {
 /*
 	Inputs:
 		pos: JSON Object containing target zone, bay
+	pos = {
+	"zone":relevant zone,
+	"bay":revenat bay,	
+	}
 */
 async function getTraysInBay(pos) {
     let res = await fetch(STOCK_API_URL + "getTraysInBay", {
