@@ -305,6 +305,7 @@ async function mongoUpdate(tray, method) {
     }
 
     // TODO: Specific Error codes for different error types
+    // TODO: Clean up some of these db.close()
     if (code !== "SUCCESS") {
       console.log("An error occured.")
       db.close()
@@ -312,7 +313,6 @@ async function mongoUpdate(tray, method) {
     }
     db.close();
   } catch (ex) {
-    db.close()
     console.log("An error occured..");
     console.log(ex);
     db.close()
@@ -321,10 +321,8 @@ async function mongoUpdate(tray, method) {
   return "SUCCESS"
 }
 
-router.get('/', function(req, res, next) {
-  res.send('This is stock taking');
-});
-
+// All routes pass the body to mongoUpdate with the correct method code.
+// It then sends the response back to the client
 router.get('/getZones', async function (req,res,next) {
   let zone_array = await mongoUpdate(req.body,"getZones")
   res.setHeader('Content-Type', 'application/json');
@@ -340,8 +338,6 @@ router.post('/addZone', async function (req, res, next) {
   }
 });
 
-// Routes simply call mongoUpdate and send appropriate response
-// Route to add tray.
 router.post('/addTray', async function(req, res, next){
   let code = await mongoUpdate(req.body, "add");
   if (code !== "SUCCESS") {
@@ -351,7 +347,6 @@ router.post('/addTray', async function(req, res, next){
   }
 }); 
 
-// Route to edit tray
 router.post('/editTray', async function(req, res, next){
   let code = await mongoUpdate(req.body, "edit");
   if (code !== "SUCCESS") {
@@ -361,7 +356,6 @@ router.post('/editTray', async function(req, res, next){
   }
 }); 
 
-// Route to remove tray
 router.post('/removeTray', async function(req, res, next){
   let code = await mongoUpdate(req.body, "remove");
   if (code !== "SUCCESS") {
@@ -386,24 +380,13 @@ router.post('/moveTray', async function(req, res, next) {
 	}
 });
 
-// Route to switch tray
 router.post('/switchTray', async function (req, res, next) {
-    /*
-    To begin with just move tray within bay.
-      Inputs:
-        posStart : A tuple containing position of tray to move
-        posTarget : A tuple containing position of target position to move to
-      Returns:
-        Whether this action completed successfully or not.
-    */
-	
-		let code = await mongoUpdate(req.body, "switchTray");
-		if (code !== "SUCCESS") {
-			res.sendStatus(400);
-		} else {
-			res.sendStatus(200);
-		}
-
+  let code = await mongoUpdate(req.body, "switchTray");
+  if (code !== "SUCCESS") {
+    res.sendStatus(400);
+  } else {
+    res.sendStatus(200);
+  }
 });
 
 module.exports = router;
