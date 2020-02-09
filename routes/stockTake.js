@@ -187,10 +187,23 @@ async function mongoUpdate(tray, method) {
   const URL = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
   const DB_NAME = "foodbank";
 
-  try {
-    let db = await MongoClient.connect(URL);
+  let db;
+  let dbo;
 
-    let dbo = db.db(DB_NAME);
+  // Try to connect and then test server
+  try {
+    db = await MongoClient.connect(URL);
+    dbo = db.db(DB_NAME);
+  } catch (ex) {
+    console.log("Failed to connect to MongoDB!");
+    console.log(ex);
+    return "FAIL";
+  }
+
+  try {
+    //let db = await MongoClient.connect(URL);
+
+    //let dbo = db.db(DB_NAME);
     let code = "NO_METHOD";
 
 		switch (method) {
@@ -230,10 +243,14 @@ async function mongoUpdate(tray, method) {
     // TODO: Error handling
     if (code !== "SUCCESS") {
       console.log("An error occured.")
+      db.close()
+      return code;
     }
     db.close();
   } catch (ex) {
     db.close()
+    console.log("An error occured..");
+    console.log(ex);
     return "FAIL"
   }
   return "SUCCESS"
@@ -281,7 +298,7 @@ router.post('/editTray', async function(req, res, next){
 
 // Route to remove tray
 router.post('/removeTray', async function(req, res, next){
-  let code = await  mongoUpdate(req.body, "remove");
+  let code = await mongoUpdate(req.body, "remove");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
@@ -322,51 +339,6 @@ router.post('/switchTray', async function (req, res, next) {
 			res.sendStatus(200);
 		}
 
-		/*
-    let First = req.body.First;
-    let Second = req.body.Second;
-    let MongoClient = require('mongodb').MongoClient;
-    let url = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
-    let myQueryA = {"zone": First["zone"], "bay": First["bay"], "tray": First["tray"]};
-    let myQueryB = {"zone": Second["zone"], "bay": Second["bay"], "tray": Second["tray"]};
-
-
-    // todo fixme add proper error handling to this
-    try {
-
-        const db = await MongoClient.connect(url, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-
-        const dbo = db.db("foodbank");
-
-        const aPromise = dbo.collection("food").findOne(myQueryA);
-        const bPromise = dbo.collection("food").findOne(myQueryB);
-
-        const [a, b] = await Promise.all([aPromise, bPromise]);
-
-        if (a === null || b === null) {
-            console.log(e);
-            res.sendStatus(400);
-        } else {
-
-            const setA = dbo.collection("food").replaceOne(myQueryA, {
-                $set: {...myQueryB}
-            });
-            const setB = dbo.collection("food").replaceOne(myQueryB, {
-                $set: {...myQueryA}
-            });
-
-            await Promise.all([setA, setB]);
-
-            res.sendStatus(200);
-        }
-    } catch (e) {
-        console.log(e);
-        res.sendStatus(400);
-    }
-	*/
 });
 
 module.exports = router;
