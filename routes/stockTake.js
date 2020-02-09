@@ -7,6 +7,11 @@ async function getZones(dbo) {
 }
 
 function addZone(zone, dbo){
+  if (!(zone.hasOwnProperty('zone') && zone.hasOwnProperty('height') && zone.hasOwnProperty('width'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
   var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"],bays:[]};
   try {
     dbo.collection("zones").insertOne(myobj, function(err, res) {
@@ -22,6 +27,11 @@ function addZone(zone, dbo){
 
 // called by mongoUpdate to build request to mongoDB to add tray
 function addTray(tray, dbo) {
+  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
   var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
   try {
     dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true}, function(err, res) { // Use upsert to add if it does not already exist.
@@ -37,6 +47,11 @@ function addTray(tray, dbo) {
 
 // called by mongoUpdate to build request to mongoDB to edit tray
 function editTray(tray, dbo) {
+  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray,hasOwnProperty('weight'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
   let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
   let newValues = {"contents": tray["contents"], "weight": tray["weight"], "expiry": tray["expiry"]};
   try {
@@ -53,6 +68,11 @@ function editTray(tray, dbo) {
 
 // called by mongoUpdate to build request to mongoDB to remove tray
 function removeTray(tray, dbo) {
+  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
   let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
   try {
     dbo.collection("food").remove(pos, function(err, res) {
@@ -68,8 +88,23 @@ function removeTray(tray, dbo) {
 
 // called by mongoUpdate to build request to mongoDB to switch tray
 async function switchTray(body, dbo) {
+  if (!(body.hasOwnProperty('first') && body.hasOwnProperty('second'))) {
+    console.log("Malformed request!");
+    return "FAIL"
+  }
+
 	let first = body.first;
 	let second = body.second;
+
+  if (!(first.hasOwnProperty('zone') && first.hasOwnProperty('bay') && first.hasOwnProperty('tray'))) {
+    console.log("Malformed request");
+    return "FAIL";
+  }
+
+  if (!(second.hasOwnProperty('zone') && second.hasOwnProperty('bay') && second.hasOwnProperty('tray'))) {
+    console.log("Malformed request");
+    return "FAIL";
+  }
 
 	try {
 		const aPromise = dbo.collection("food").findOne(first);
@@ -94,6 +129,11 @@ async function switchTray(body, dbo) {
 }
 
 async function getTraysInBay(bay, dbo) {
+  if (!(bay.hasOwnProperty('zone') && bay.hasOwnProperty('bay'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
 	// bay is json object containing zone and bay identifier. No need to specify tray
 	let pos = {"zone": bay["zone"], "bay": bay["bay"]};
 
@@ -103,9 +143,23 @@ async function getTraysInBay(bay, dbo) {
 
 // Move Tray, not working yet.
 async function moveTray(body, dbo) {
+  if (!(body.hasOwnProperty('posStart') && body.hasOwnProperty('posTarget'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
 
 	let posStart = body.posStart;
 	let posTarget = body.posTarget;
+
+  if (!(posStart.hasOwnProperty('zone') && posStart.hasOwnProperty('bay') && posStart.hasOwnProperty('tray'))) {
+    console.log("Malformed request");
+    return "FAIL";
+  }
+  
+  if (!(posTarget.hasOwnProperty('zone') && posTarget.hasOwnProperty('bay') && posTarget.hasOwnProperty('tray'))) {
+    console.log("Malformed request");
+    return "FAIL";
+  }
 
 	try {
 		var occupied = true;
