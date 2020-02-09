@@ -1,14 +1,31 @@
 var express = require('express');
 var router = express.Router();
 
+// called by mongoUpdate to get all zones in the mongoDB
 async function getZones(dbo) {
   const zones = await dbo.collection("zones").find({}).toArray();
 	return zones;
 }
 
+// called by mongoUpdate to add a new zone to the mongoDB
 function addZone(zone, dbo){
   if (!(zone.hasOwnProperty('zone') && zone.hasOwnProperty('height') && zone.hasOwnProperty('width'))) {
     console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (!(Number.isInteger(zone['height']) && Number.isInteger(zone['width']))) {
+    console.log("Height and width must be integers!");
+    return "FAIL";
+  }
+
+  if (!(zone['height'] > 0 && zone['width'] > 0)) {
+    console.log("Height and width must be more than zero!");
+    return "FAIL";
+  }
+
+  if (!(typeof(zone['zone'] === "string"))) {
+    console.log("Zone identifier must be a string!");
     return "FAIL";
   }
 
@@ -32,6 +49,16 @@ function addTray(tray, dbo) {
     return "FAIL";
   }
 
+  if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string" && typeof(tray['contents']) === "string" && typeof(tray['expiry']) === "string")) {
+    console.log("Zone, bay, tray, contents and expiry must be strings!");
+    return "FAIL";
+  }
+
+  if (!(typeof(tray['weight']) === "number")) {
+    consolee.log("Weight must be a number!");
+    return "FAIL";
+  }
+
   var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
   try {
     dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true}, function(err, res) { // Use upsert to add if it does not already exist.
@@ -49,6 +76,16 @@ function addTray(tray, dbo) {
 function editTray(tray, dbo) {
   if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray,hasOwnProperty('weight'))) {
     console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string" && typeof(tray['contents']) === "string" && typeof(tray['expiry']) === "string")) {
+    console.log("Zone, bay, tray, contents and expiry must be strings!");
+    return "FAIL";
+  }
+
+  if (!(typeof(tray['weight']) === "number")) {
+    consolee.log("Weight must be a number!");
     return "FAIL";
   }
 
@@ -70,6 +107,11 @@ function editTray(tray, dbo) {
 function removeTray(tray, dbo) {
   if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray'))) {
     console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string")) {
+    console.log("Position attributes must be strings!");
     return "FAIL";
   }
 
@@ -106,6 +148,16 @@ async function switchTray(body, dbo) {
     return "FAIL";
   }
 
+  if (!(typeof(first['zone']) === "string" && typeof(first['bay']) === "string" && typeof(first['tray']) === "string")) {
+    console.log("(First Tray) Position attributes must be strings!");
+    return "FAIL";
+  }
+
+  if (!(typeof(second['zone']) === "string" && typeof(second['bay']) === "string" && typeof(second['tray']) === "string")) {
+    console.log("(Second Tray) Position attributes must be strings!");
+    return "FAIL";
+  }
+  
 	try {
 		const aPromise = dbo.collection("food").findOne(first);
 		const bPromise = dbo.collection("food").findOne(second);
@@ -134,6 +186,11 @@ async function getTraysInBay(bay, dbo) {
     return "FAIL";
   }
 
+  if (!(typeof(bay['zone']) === "string" && typeof(bay['bay']) === "string")) {
+    console.log("Position attributes must be strings!");
+    return "FAIL";
+  }
+
 	// bay is json object containing zone and bay identifier. No need to specify tray
 	let pos = {"zone": bay["zone"], "bay": bay["bay"]};
 
@@ -158,6 +215,16 @@ async function moveTray(body, dbo) {
   
   if (!(posTarget.hasOwnProperty('zone') && posTarget.hasOwnProperty('bay') && posTarget.hasOwnProperty('tray'))) {
     console.log("Malformed request");
+    return "FAIL";
+  }
+
+  if (!(typeof(posStart['zone']) === "string" && typeof(posStart['bay']) === "string" && typeof(posStart['tray']) === "string")) {
+    console.log("(Start Tray) Position attributes must be strings!");
+    return "FAIL";
+  }
+
+  if (!(typeof(posTarget['zone']) === "string" && typeof(posTarget['bay']) === "string" && typeof(posTarget['tray']) === "string")) {
+    console.log("(Target Tray) Position attributes must be strings!");
     return "FAIL";
   }
 
@@ -201,9 +268,6 @@ async function mongoUpdate(tray, method) {
   }
 
   try {
-    //let db = await MongoClient.connect(URL);
-
-    //let dbo = db.db(DB_NAME);
     let code = "NO_METHOD";
 
 		switch (method) {
@@ -240,7 +304,7 @@ async function mongoUpdate(tray, method) {
       return code;
     }
 
-    // TODO: Error handling
+    // TODO: Specific Error codes for different error types
     if (code !== "SUCCESS") {
       console.log("An error occured.")
       db.close()
@@ -251,6 +315,7 @@ async function mongoUpdate(tray, method) {
     db.close()
     console.log("An error occured..");
     console.log(ex);
+    db.close()
     return "FAIL"
   }
   return "SUCCESS"
