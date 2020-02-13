@@ -172,6 +172,11 @@ function addTray(tray, dbo) {
     return "FAIL";
   }
 
+  if (tray['xPos'] < 0 || tray['yPos'] < 0) {
+    console.log("Position must be within the valid range! (Positive Integer)");
+    return "FAIL";
+  }
+
   var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "xPos": tray["xPos"], "yPos": tray["yPos"]};
   try {
     dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true}, function(err, res) { // Use upsert to add if it does not already exist.
@@ -198,12 +203,39 @@ function editTray(tray, dbo) {
   }
 
   if (!(typeof(tray['weight']) === "number")) {
-    consolee.log("Weight must be a number!");
+    console.log("Weight must be a number!");
     return "FAIL";
   }
 
+  if (! (Number.isInteger(tray['xPos']) && Number.isInteger(tray['yPos']))) {
+    console.log("Position attributes must be integers");
+    return "FAIL";
+  }
+
+  if (tray['xPos'] < 0 || tray['yPos'] < 0) {
+    console.log("Position must be within the valid range! (Positive Integer)");
+    return "FAIL";
+  }
+
+  try {
+      collectionSize = dbo.collection("food").find({
+          "zone": tray["zone"],
+          "bay": tray["bay"],
+          "xPos": {$gt: tray["xPos"]},
+          "yPos": {$gt: tray["yPos"]}
+      }).limit(1).length()
+
+      if (collectionSize > 0) {
+          console.log("Trays will be deleted if this action is performed - please delete trays first.")
+          return "FAIL"
+      }
+  } catch (ex) {
+      console.log(ex);
+      return "FAIL"
+  }
+
   let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
-  let newValues = {"contents": tray["contents"], "weight": tray["weight"], "expiry": tray["expiry"]};
+  let newValues = {"contents": tray["contents"], "weight": tray["weight"], "expiry": tray["expiry"], "xPos": tray["xPos"], "yPos": tray["yPos"]};
   try {
     dbo.collection("food").updateOne(pos, {"$set": newValues}, function(err, res) {
       if (err) throw err;
