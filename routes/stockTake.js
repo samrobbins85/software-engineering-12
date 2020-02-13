@@ -44,15 +44,10 @@ function addZone(zone, dbo){
 
 
 function addBay(bay,dbo){
-  if (!(bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone') && bay.hasOwnProperty('position') && bay.hasOwnProperty('size'))) {
+  if (!(bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
     console.log("Malformed request!");
     return "FAIL";
   }
-
-  //if (! (Array.isArray(bay['position']) && Array.isArray(bay['size']))) {
-    //console.log("Position and size parameters must be arrays!");
-    //return "FAIL";
-  //}
 
   if (! (Number.isInteger(bay['xVal']) && Number.isInteger(bay['yVal']) && Number.isInteger(bay['xSize']) && Number.isInteger(bay['ySize']))) {
     console.log("Position and size must be integers!");
@@ -63,28 +58,6 @@ function addBay(bay,dbo){
     console.log("Position and size must be within the valid range! (Positive Integer)");
     return "FAIL";
   }
-
-  //if (! (bay['size'].length == 2)) {
-    //console.log("Size parameter must be of length 2");
-    //return "FAIL";
-  //}
-
-  //if (! (bay['position'].length == 2)) {
-    //console.log("Position parameter must be of length 2");
-    //return "FAIL";
-  //}
-
-  //for (let i = 0; i < 2; i++) {
-    //if (! (Number.isInteger(bay['size'][i]))) {
-      //console.log("Size parameter must be an integer (Position " + i + ")");
-      //return "FAIL";
-    //}
-
-    //if (! (Number.isInteger(bay['position'][i]))) {
-      //console.log("Position parameter must be an integer (Position " + i + ")");
-      //return "FAIL";
-    //}
-  //}
 
   if (! (typeof(bay['bay']) == "string" && typeof(bay['zone'] == "string"))) {
     console.log("Bay and zone identifiers must be strings.");
@@ -106,8 +79,28 @@ function addBay(bay,dbo){
 
 // called by mongoUpdate to build request to mongoDB to edit bay
 function editBay(bay, dbo) {
+  if (! (bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
+    console.log("Malformed request");
+    return "FAIL";
+  }
+
+  if (! (Number.isInteger(bay['xVal']) && Number.isInteger(bay['yVal']) && Number.isInteger(bay['xSize']) && Number.isInteger(bay['ySize']))) {
+    console.log("Position and size must be integers!");
+    return "FAIL";
+  }
+
+  if (bay['xVal'] < 0 || bay['yVal'] < 0 || bay['xSize'] < 0 || bay['ySize'] < 0) {
+    console.log("Position must be within the valid range! (Positive Integer)");
+    return "FAIL";
+  }
+
+  if (! (typeof(bay['bay']) == "string")) {
+    console.log("Bay and zone identifiers must be strings.");
+    return "FAIL";
+  }
+
   let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
-  let newValues = { "size": [bay["xSize"], bay["ySize"]]};
+  let newValues = {"size": [bay["xSize"], bay["ySize"]]};
   try {
     dbo.collection("bays").updateOne(pos, {"$set": newValues}, function(err, res) {
       if (err) throw err;
@@ -115,13 +108,32 @@ function editBay(bay, dbo) {
     });
   } catch (ex) {
 		console.log(ex);
-    return "FAIL"
+    return "FAIL";
   }
-  return "SUCCESS"
+  return "SUCCESS";
 }
 
 // called by mongoUpdate to build request to mongoDB to remove bay
 function removeBay(bay, dbo) {
+  if (! (bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal'))) {
+    console.log("Malformed request");
+    return "FAIL";
+  }
+  if (! (Number.isInteger(bay['xVal']) && Number.isInteger(bay['yVal']) )) {
+    console.log("Position and size must be integers!");
+    return "FAIL";
+  }
+
+  if (bay['xVal'] < 0 || bay['yVal'] < 0) {
+    console.log("Position must be within the valid range! (Positive Integer)");
+    return "FAIL";
+  }
+
+  if (! (typeof(bay['bay']) == "string")) {
+    console.log("Bay and zone identifiers must be strings.");
+    return "FAIL";
+  }
+
   let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
   try {
     dbo.collection("bays").remove(pos, function(err, res) {
