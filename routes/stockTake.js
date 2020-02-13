@@ -42,6 +42,52 @@ function addZone(zone, dbo){
   return "SUCCESS"
 }
 
+
+function addBay(bay,dbo){
+    var myobj = { "name": bay["bay"], "zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]], "size": [bay["xSize"], bay["ySize"]]}
+    try {
+        dbo.collection("bays").insertOne(myobj, function(err, res) {
+            if (err) throw err;
+            console.log("1 document inserted");
+        });
+    } catch (ex) {
+        console.log(ex);
+        return "FAIL"
+    }
+    return "SUCCESS"
+}
+
+// called by mongoUpdate to build request to mongoDB to edit bay
+function editBay(bay, dbo) {
+  let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
+  let newValues = { "size": [bay["xSize"], bay["ySize"]]};
+  try {
+    dbo.collection("bays").updateOne(pos, {"$set": newValues}, function(err, res) {
+      if (err) throw err;
+      console.log(res["modifiedCount"] + " document edited");
+    });
+  } catch (ex) {
+		console.log(ex);
+    return "FAIL"
+  }
+  return "SUCCESS"
+}
+
+// called by mongoUpdate to build request to mongoDB to remove bay
+function removeBay(bay, dbo) {
+  let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
+  try {
+    dbo.collection("bays").remove(pos, function(err, res) {
+      if (err) throw err;
+      console.log("Deleted tray at Zone: " + pos["zone"] + ", Bay: (" + pos["position"][0] + ", " + pos["position"][1] + ").");
+    });
+  } catch (ex) {
+		console.log(ex);
+    return "FAIL";
+  }
+  return "SUCCESS";
+}
+
 // called by mongoUpdate to build request to mongoDB to add tray
 function addTray(tray, dbo) {
   if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight'))) {
@@ -295,9 +341,18 @@ async function mongoUpdate(tray, method) {
   	  case "addZone":
   	    code = await addZone(tray,dbo);
   	  	break;
-			case "switchTray":
-				code = await switchTray(tray, dbo);
-				break;
+  	  case "switchTray":
+		code = await switchTray(tray, dbo);
+		break;
+      case "addBay":
+        code = await addBay(bay, dbo);
+        break;
+      case "editBay":
+        code = await editBay(bay, dbo);
+        break;
+      case "removeBay":
+        code = await removeBay(bay,dbo);
+        break;
 		}
     if (code.constructor === Array || code.constructor === Object) {
       db.close();
@@ -358,6 +413,36 @@ router.post('/editTray', async function(req, res, next){
 
 router.post('/removeTray', async function(req, res, next){
   let code = await mongoUpdate(req.body, "remove");
+  if (code !== "SUCCESS") {
+    res.sendStatus(400);
+  } else {
+    res.sendStatus(200);
+  }
+});
+
+// Route to add bay.
+router.post('/addBay', async function(req, res, next){
+  let code = await mongoUpdate(req.body, "add");
+  if (code !== "SUCCESS") {
+    res.sendStatus(400);
+  } else {
+    res.sendStatus(200);
+  }
+});
+
+// Route to edit bay
+router.post('/editBay', async function(req, res, next){
+  let code = await mongoUpdate(req.body, "edit");
+  if (code !== "SUCCESS") {
+    res.sendStatus(400);
+  } else {
+    res.sendStatus(200);
+  }
+});
+
+// Route to remove bay
+router.post('/removeBay', async function(req, res, next){
+  let code = await  mongoUpdate(req.body, "remove");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
