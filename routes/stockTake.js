@@ -39,6 +39,9 @@ function addZone(zone, dbo){
     console.log(ex);
     return "FAIL"
   }
+
+  
+
   return "SUCCESS"
 }
 
@@ -149,7 +152,7 @@ function removeBay(bay, dbo) {
 
 // called by mongoUpdate to build request to mongoDB to add tray
 function addTray(tray, dbo) {
-  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight'))) {
+  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight') && tray.hasOwnProperty('xPos') && tray.hasOwnProperty('yPos'))) {
     console.log("Malformed request!");
     return "FAIL";
   }
@@ -160,11 +163,16 @@ function addTray(tray, dbo) {
   }
 
   if (!(typeof(tray['weight']) === "number")) {
-    consolee.log("Weight must be a number!");
+    console.log("Weight must be a number!");
     return "FAIL";
   }
 
-  var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "xPos": tray["xPos"], "yPos": bay["yPos"]};
+  if (! (Number.isInteger(tray['xPos']) && Number.isInteger(tray['yPos']))) {
+    console.log("Position attributes must be integers");
+    return "FAIL";
+  }
+
+  var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "xPos": tray["xPos"], "yPos": tray["yPos"]};
   try {
     dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true}, function(err, res) { // Use upsert to add if it does not already exist.
       if (err) throw err;
