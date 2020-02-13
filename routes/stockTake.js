@@ -30,18 +30,16 @@ function addZone(zone, dbo){
   }
 
   var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"]};
+
   try {
     dbo.collection("zones").insertOne(myobj, function(err, res) {
       if (err) throw err;
-      console.log("1 document inserted");
+      if (! (res['insertedCount'] == 1)) throw "Did not insert new zone";
     });
   } catch (ex) {
     console.log(ex);
     return "FAIL"
   }
-
-  
-
   return "SUCCESS"
 }
 
@@ -71,7 +69,7 @@ function addBay(bay,dbo){
   try {
     dbo.collection("bays").insertOne(myobj, function(err, res) {
       if (err) throw err;
-      console.log("1 document inserted");
+      if (! (res['insertedCount'] == 1)) throw "Did not insert new bay";
     });
   } catch (ex) {
     console.log(ex);
@@ -107,6 +105,7 @@ function editBay(bay, dbo) {
   try {
     dbo.collection("bays").updateOne(pos, {"$set": newValues}, function(err, res) {
       if (err) throw err;
+      if (! (res['modifiedCount'] == 1)) throw "Document not modified";
       console.log(res["modifiedCount"] + " document edited");
     });
   } catch (ex) {
@@ -117,7 +116,7 @@ function editBay(bay, dbo) {
 }
 
 // called by mongoUpdate to build request to mongoDB to remove bay
-function removeBay(bay, dbo) {
+async function removeBay(bay, dbo) {
   if (! (bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal'))) {
     console.log("Malformed request");
     return "FAIL";
@@ -138,15 +137,17 @@ function removeBay(bay, dbo) {
   }
 
   let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
-  try {
-    dbo.collection("bays").remove(pos, function(err, res) {
-      if (err) throw err;
-      console.log("Deleted tray at Zone: " + pos["zone"] + ", Bay: (" + pos["position"][0] + ", " + pos["position"][1] + ").");
-    });
-  } catch (ex) {
-		console.log(ex);
-    return "FAIL";
-  }
+  let res = await dbo.collection("bays").remove(pos);
+  if (! (res['result']['n'] == 1)) return "FAIL";
+  //try {
+    //dbo.collection("bays").remove(pos, function(err, res) {
+      //if (err) throw err;
+      //if (! (res['result']['n'] == 1)) throw "No Document was deleted";
+    //});
+  //} catch (ex) {
+		//console.log(ex);
+    //return "FAIL";
+  //}
   return "SUCCESS";
 }
 
@@ -176,7 +177,7 @@ function addTray(tray, dbo) {
   try {
     dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true}, function(err, res) { // Use upsert to add if it does not already exist.
       if (err) throw err;
-      console.log(res["upsertedCount"] + " document inserted");
+      if (! (res['upsertedCount'] == 1)) throw "No document was inserted";
     });
   } catch (ex) {
 		console.log(ex);
@@ -198,7 +199,7 @@ function editTray(tray, dbo) {
   }
 
   if (!(typeof(tray['weight']) === "number")) {
-    consolee.log("Weight must be a number!");
+    console.log("Weight must be a number!");
     return "FAIL";
   }
 
@@ -207,7 +208,7 @@ function editTray(tray, dbo) {
   try {
     dbo.collection("food").updateOne(pos, {"$set": newValues}, function(err, res) {
       if (err) throw err;
-      console.log(res["modifiedCount"] + " document edited");
+      if (! (res['modifiedCount'] == 1)) throw "No Document was modified";
     });
   } catch (ex) {
 		console.log(ex);
@@ -217,7 +218,7 @@ function editTray(tray, dbo) {
 }
 
 // called by mongoUpdate to build request to mongoDB to remove tray
-function removeTray(tray, dbo) {
+async function removeTray(tray, dbo) {
   if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray'))) {
     console.log("Malformed request!");
     return "FAIL";
@@ -229,15 +230,17 @@ function removeTray(tray, dbo) {
   }
 
   let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
-  try {
-    dbo.collection("food").remove(pos, function(err, res) {
-      if (err) throw err;
-      console.log("Deleted tray at Zone: " + pos["zone"] + ", Bay: " + pos["bay"] + ", Tray: " + pos["tray"]);
-    });
-  } catch (ex) {
-		console.log(ex);
-    return "FAIL";
-  }
+  let res = await dbo.collection("food").remove(pos);
+  if (! (res['result']['n'] == 1)) return "FAIL";
+  //try {
+    //dbo.collection("food").remove(pos, function(err, res) {
+      //if (err) throw err;
+      //if (! (res['result']['n'] == 1)) throw "No Document was deleted";
+    //});
+  //} catch (ex) {
+		//console.log(ex);
+    //return "FAIL";
+  //}
   return "SUCCESS";
 }
 
@@ -351,7 +354,7 @@ async function moveTray(body, dbo) {
 		}
 		await dbo.collection("food").updateOne(posStart, {$set: posTarget}, function(err, res) {
 			if (err) throw err;
-
+      if (! (res['modifiedCount'] == 1)) throw "No Document was modified";
 		});
 	} catch (ex) {
 		console.log(ex);
