@@ -49,22 +49,42 @@ function addBay(bay,dbo){
     return "FAIL";
   }
 
-  if (! (Array.isArray(bay['position']) && Array.isArray(bay['size']))) {
-    console.log("Position and size parameters must be arrays!");
+  //if (! (Array.isArray(bay['position']) && Array.isArray(bay['size']))) {
+    //console.log("Position and size parameters must be arrays!");
+    //return "FAIL";
+  //}
+
+  if (! (Number.isInteger(bay['xVal']) && Number.isInteger(bay['yVal']) && Number.isInteger(bay['xSize']) && Number.isInteger(bay['ySize']))) {
+    console.log("Position and size must be integers!");
     return "FAIL";
   }
 
-  if (! (bay['size'].length == 2)) {
-    console.log("Size parameter must be of length 2");
+  if (bay['xVal'] < 0 || bay['yVal'] < 0 || bay['xSize'] < 1 || bay['ySize'] < 1) {
+    console.log("Position and size must be within the valid range! (Positive Integer)");
     return "FAIL";
   }
 
-  if (! (bay['position'].length == 2)) {
-    console.log("Position parameter must be of length 2");
-    return "FAIL";
-  }
+  //if (! (bay['size'].length == 2)) {
+    //console.log("Size parameter must be of length 2");
+    //return "FAIL";
+  //}
 
-  // TODO: Check type of contents of size and position
+  //if (! (bay['position'].length == 2)) {
+    //console.log("Position parameter must be of length 2");
+    //return "FAIL";
+  //}
+
+  //for (let i = 0; i < 2; i++) {
+    //if (! (Number.isInteger(bay['size'][i]))) {
+      //console.log("Size parameter must be an integer (Position " + i + ")");
+      //return "FAIL";
+    //}
+
+    //if (! (Number.isInteger(bay['position'][i]))) {
+      //console.log("Position parameter must be an integer (Position " + i + ")");
+      //return "FAIL";
+    //}
+  //}
 
   if (! (typeof(bay['bay']) == "string" && typeof(bay['zone'] == "string"))) {
     console.log("Bay and zone identifiers must be strings.");
