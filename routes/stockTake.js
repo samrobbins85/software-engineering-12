@@ -29,7 +29,7 @@ function addZone(zone, dbo){
     return "FAIL";
   }
 
-  var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"],bays:[]};
+  var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"]};
   try {
     dbo.collection("zones").insertOne(myobj, function(err, res) {
       if (err) throw err;
@@ -105,7 +105,7 @@ function addTray(tray, dbo) {
     return "FAIL";
   }
 
-  var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
+  var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "xPos": tray["xPos"], "yPos": bay["yPos"]};
   try {
     dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true}, function(err, res) { // Use upsert to add if it does not already exist.
       if (err) throw err;
