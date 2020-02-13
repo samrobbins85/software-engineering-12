@@ -3,12 +3,13 @@ var router = express.Router();
 
 // called by mongoUpdate to get all zones in the mongoDB
 async function getZones(dbo) {
+  // TODO: Checking succeeded
   const zones = await dbo.collection("zones").find({}).toArray();
 	return zones;
 }
 
 // called by mongoUpdate to add a new zone to the mongoDB
-function addZone(zone, dbo){
+async function addZone(zone, dbo){
   if (!(zone.hasOwnProperty('zone') && zone.hasOwnProperty('height') && zone.hasOwnProperty('width'))) {
     console.log("Malformed request!");
     return "FAIL";
@@ -32,19 +33,26 @@ function addZone(zone, dbo){
   var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"]};
 
   try {
-    dbo.collection("zones").insertOne(myobj, function(err, res) {
-      if (err) throw err;
-      if (! (res['insertedCount'] == 1)) throw "Did not insert new zone";
-    });
+    let res = await dbo.collection("zones").insertOne(myobj);
+    if (! (res['insertedCount'] == 1)) return "FAIL";
   } catch (ex) {
     console.log(ex);
-    return "FAIL"
+    return "FAIL";
   }
+  //try {
+    //dbo.collection("zones").insertOne(myobj, function(err, res) {
+      //if (err) throw err;
+      //if (! (res['insertedCount'] == 1)) throw "Did not insert new zone";
+    //});
+  //} catch (ex) {
+    //console.log(ex);
+    //return "FAIL"
+  //}
   return "SUCCESS"
 }
 
 
-function addBay(bay,dbo){
+async function addBay(bay,dbo){
   if (!(bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
     console.log("Malformed request!");
     return "FAIL";
@@ -67,19 +75,26 @@ function addBay(bay,dbo){
 
   var myobj = { "name": bay["bay"], "zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]], "size": [bay["xSize"], bay["ySize"]]}
   try {
-    dbo.collection("bays").insertOne(myobj, function(err, res) {
-      if (err) throw err;
-      if (! (res['insertedCount'] == 1)) throw "Did not insert new bay";
-    });
+    let res = await dbo.collection("bays").insertOne(myobj);
+    if (! (res['insertedCount'] == 1)) return "FAIL";
   } catch (ex) {
     console.log(ex);
-    return "FAIL"
+    return "FAIL";
   }
+  //try {
+    //dbo.collection("bays").insertOne(myobj, function(err, res) {
+      //if (err) throw err;
+      //if (! (res['insertedCount'] == 1)) throw "Did not insert new bay";
+    //});
+  //} catch (ex) {
+    //console.log(ex);
+    //return "FAIL"
+  //}
   return "SUCCESS"
 }
 
 // called by mongoUpdate to build request to mongoDB to edit bay
-function editBay(bay, dbo) {
+async function editBay(bay, dbo) {
   if (! (bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
     console.log("Malformed request");
     return "FAIL";
@@ -102,16 +117,25 @@ function editBay(bay, dbo) {
 
   let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
   let newValues = {"size": [bay["xSize"], bay["ySize"]]};
+
   try {
-    dbo.collection("bays").updateOne(pos, {"$set": newValues}, function(err, res) {
-      if (err) throw err;
-      if (! (res['modifiedCount'] == 1)) throw "Document not modified";
-      console.log(res["modifiedCount"] + " document edited");
-    });
+    let res = dbo.collection("bays").updateOne(pos, {"$set": newValues});
+    if (! (res['modifiedCount'] == 1)) return "FAIL";
   } catch (ex) {
-		console.log(ex);
+    console.log(ex);
     return "FAIL";
   }
+
+  //try {
+    //dbo.collection("bays").updateOne(pos, {"$set": newValues}, function(err, res) {
+      //if (err) throw err;
+      //if (! (res['modifiedCount'] == 1)) throw "Document not modified";
+      //console.log(res["modifiedCount"] + " document edited");
+    //});
+  //} catch (ex) {
+		//console.log(ex);
+    //return "FAIL";
+  //}
   return "SUCCESS";
 }
 
@@ -137,8 +161,14 @@ async function removeBay(bay, dbo) {
   }
 
   let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
-  let res = await dbo.collection("bays").remove(pos);
-  if (! (res['result']['n'] == 1)) return "FAIL";
+  
+  try {
+    let res = await dbo.collection("bays").remove(pos);
+    if (! (res['result']['n'] == 1)) return "FAIL";
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL";
+  }
   //try {
     //dbo.collection("bays").remove(pos, function(err, res) {
       //if (err) throw err;
@@ -152,7 +182,7 @@ async function removeBay(bay, dbo) {
 }
 
 // called by mongoUpdate to build request to mongoDB to add tray
-function addTray(tray, dbo) {
+async function addTray(tray, dbo) {
   if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight') && tray.hasOwnProperty('xPos') && tray.hasOwnProperty('yPos'))) {
     console.log("Malformed request!");
     return "FAIL";
@@ -174,20 +204,29 @@ function addTray(tray, dbo) {
   }
 
   var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "xPos": tray["xPos"], "yPos": tray["yPos"]};
+
   try {
-    dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true}, function(err, res) { // Use upsert to add if it does not already exist.
-      if (err) throw err;
-      if (! (res['upsertedCount'] == 1)) throw "No document was inserted";
-    });
+    let res = await dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true});
+    if (! (res['upsertedCount'] == 1)) return "FAIL";
   } catch (ex) {
-		console.log(ex);
-    return "FAIL"
+    console.log(ex);
+    return "FAIL";
   }
+
+  //try {
+    //dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true}, function(err, res) { // Use upsert to add if it does not already exist.
+      //if (err) throw err;
+      //if (! (res['upsertedCount'] == 1)) throw "No document was inserted";
+    //});
+  //} catch (ex) {
+		//console.log(ex);
+    //return "FAIL"
+  //}
   return "SUCCESS"
 }
 
 // called by mongoUpdate to build request to mongoDB to edit tray
-function editTray(tray, dbo) {
+async function editTray(tray, dbo) {
   if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray,hasOwnProperty('weight'))) {
     console.log("Malformed request!");
     return "FAIL";
@@ -205,15 +244,24 @@ function editTray(tray, dbo) {
 
   let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
   let newValues = {"contents": tray["contents"], "weight": tray["weight"], "expiry": tray["expiry"]};
+  
   try {
-    dbo.collection("food").updateOne(pos, {"$set": newValues}, function(err, res) {
-      if (err) throw err;
-      if (! (res['modifiedCount'] == 1)) throw "No Document was modified";
-    });
+    let res = await dbo.collection("food").updateOne(pos, {"$set": newValues});
+    if (! (res['modifiedCount'] == 1)) return "FAIL";
   } catch (ex) {
-		console.log(ex);
-    return "FAIL"
+    console.log(ex);
+    return "FAIL";
   }
+
+  //try {
+    //dbo.collection("food").updateOne(pos, {"$set": newValues}, function(err, res) {
+      //if (err) throw err;
+      //if (! (res['modifiedCount'] == 1)) throw "No Document was modified";
+    //});
+  //} catch (ex) {
+		//console.log(ex);
+    //return "FAIL"
+  //}
   return "SUCCESS"
 }
 
@@ -230,21 +278,18 @@ async function removeTray(tray, dbo) {
   }
 
   let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
-  let res = await dbo.collection("food").remove(pos);
-  if (! (res['result']['n'] == 1)) return "FAIL";
-  //try {
-    //dbo.collection("food").remove(pos, function(err, res) {
-      //if (err) throw err;
-      //if (! (res['result']['n'] == 1)) throw "No Document was deleted";
-    //});
-  //} catch (ex) {
-		//console.log(ex);
-    //return "FAIL";
-  //}
+  try {
+    let res = await dbo.collection("food").remove(pos);
+    if (! (res['result']['n'] == 1)) return "FAIL";
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL";
+  }
   return "SUCCESS";
 }
 
 // called by mongoUpdate to build request to mongoDB to switch tray
+// TODO: Check if Mongodb executes the requests
 async function switchTray(body, dbo) {
   if (!(body.hasOwnProperty('first') && body.hasOwnProperty('second'))) {
     console.log("Malformed request!");
@@ -314,7 +359,8 @@ async function getTraysInBay(bay, dbo) {
 	return trays;
 }
 
-// Move Tray, not working yet.
+// Moves a tray
+// TODO: Check if MongoDB executes the commands
 async function moveTray(body, dbo) {
   if (!(body.hasOwnProperty('posStart') && body.hasOwnProperty('posTarget'))) {
     console.log("Malformed request!");
