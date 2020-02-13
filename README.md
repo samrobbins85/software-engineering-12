@@ -9,3 +9,6 @@ If this does not make sense to you, then consult the JavaScript documentation ht
 
 The simplest case is getZones as it is a GET request, whereas the rest are POSTs, so this can be accessed in the browser.
 Going to `localhost:3000/stockTake/getZones` you will see the output.
+
+## MongoDB URL
+`mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority`
