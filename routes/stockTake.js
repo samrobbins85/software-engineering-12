@@ -44,17 +44,44 @@ function addZone(zone, dbo){
 
 
 function addBay(bay,dbo){
-    var myobj = { "name": bay["bay"], "zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]], "size": [bay["xSize"], bay["ySize"]]}
-    try {
-        dbo.collection("bays").insertOne(myobj, function(err, res) {
-            if (err) throw err;
-            console.log("1 document inserted");
-        });
-    } catch (ex) {
-        console.log(ex);
-        return "FAIL"
-    }
-    return "SUCCESS"
+  if (!(bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone') && bay.hasOwnProperty('position') && bay.hasOwnProperty('size'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (! (Array.isArray(bay['position']) && Array.isArray(bay['size']))) {
+    console.log("Position and size parameters must be arrays!");
+    return "FAIL";
+  }
+
+  if (! (bay['size'].length == 2)) {
+    console.log("Size parameter must be of length 2");
+    return "FAIL";
+  }
+
+  if (! (bay['position'].length == 2)) {
+    console.log("Position parameter must be of length 2");
+    return "FAIL";
+  }
+
+  // TODO: Check type of contents of size and position
+
+  if (! (typeof(bay['bay']) == "string" && typeof(bay['zone'] == "string"))) {
+    console.log("Bay and zone identifiers must be strings.");
+    return "FAIL";
+  }
+
+  var myobj = { "name": bay["bay"], "zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]], "size": [bay["xSize"], bay["ySize"]]}
+  try {
+    dbo.collection("bays").insertOne(myobj, function(err, res) {
+      if (err) throw err;
+      console.log("1 document inserted");
+    });
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL"
+  }
+  return "SUCCESS"
 }
 
 // called by mongoUpdate to build request to mongoDB to edit bay
