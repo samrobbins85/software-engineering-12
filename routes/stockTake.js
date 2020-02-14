@@ -497,6 +497,9 @@ async function mongoUpdate(tray, method) {
   	  case "getTraysInBay":
   	    code = await getTraysInBay(tray, dbo);
   	  	break;
+      case "getBaysInZone":
+        code = await getBaysInZone(zone, dbo);
+        break;
   	  case "moveTray":
   	    code = await moveTray(tray, dbo);
   	  	break;
@@ -619,6 +622,12 @@ router.post('/getTraysInBay', async function(req, res, next) {
 	let _trays = await mongoUpdate(req.body, "getTraysInBay");
 	res.setHeader('Content-Type', 'application/json');
   	res.status(200).send({trays: _trays});
+});
+
+router.post('/getBaysInZone', async function(req, res, next) {
+	let _bays = await mongoUpdate(req.body, "getTraysInBay");
+	res.setHeader('Content-Type', 'application/json');
+  	res.status(200).send({bays: _bays});
 });
 
 router.post('/moveTray', async function(req, res, next) {
