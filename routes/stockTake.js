@@ -209,20 +209,18 @@ async function addTray(tray, dbo) {
   }
 
   let timeLength = tray["expiry"].length;
-  let expiryDate
 
   if (timeLength == 4) {
-    let x = new Date(parseInt(tray["expiry"]), 12, 31, 23, 59, 59);
-    expiryDate = x.getTime();
+    let x = new Date(parseInt(tray["expiry"]), 11, 31, 23, 59, 59);
+    tray["expiry"] = x.getTime();
   }
   else {
     let expiryArray = tray["expiry"].split("/");
-    let x = new Date(parseInt(expiryArray[0]), parseInt(expiryArray[1]), 31, 23, 59, 59);
-    expiryDate = x.getTime();
+    let x = new Date(parseInt(expiryArray[1]), (parseInt(expiryArray[0])-1), 1, 0, 0, 0);
+    tray["expiry"] = x.getTime();
   }
-  console.log(expiryDate);
 
-  var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "contents": tray["contents"], "weight": tray["weight"], "expiry": expiryDate, "xPos": tray["xPos"], "yPos": tray["yPos"]};
+  var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "contents": tray["contents"], "weight": tray["weight"], "expiry": tray["expiry"], "xPos": tray["xPos"], "yPos": tray["yPos"]};
 
   try {
     let res = await dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true});
