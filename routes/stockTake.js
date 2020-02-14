@@ -25,7 +25,7 @@ async function addZone(zone, dbo){
     return "FAIL";
   }
 
-  if (!(typeof(zone['zone'] === "string"))) {
+  if (!(typeof(zone['name'] === "string"))) {
     console.log("Zone identifier must be a string!");
     return "FAIL";
   }
@@ -51,6 +51,39 @@ async function addZone(zone, dbo){
   return "SUCCESS"
 }
 
+async function editZone(zone, dbo) {
+  if (!(zone.hasOwnProperty('zone') && zone.hasOwnProperty('height') && zone.hasOwnProperty('width'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (!(Number.isInteger(zone['height']) && Number.isInteger(zone['width']))) {
+    console.log("Height and width must be integers!");
+    return "FAIL";
+  }
+
+  if (!(zone['height'] > 0 && zone['width'] > 0)) {
+    console.log("Height and width must be more than zero!");
+    return "FAIL";
+  }
+
+  if (!(typeof(zone['zone'] === "string"))) {
+    console.log("Zone identifier must be a string!");
+    return "FAIL";
+  }
+
+  let pos = { name: zone["zone"] };
+  let newValues = { height: zone["height"], width: zone["width"] };
+
+  try {
+    let res = dbo.collection("zones").updateOne(pos, {"$set": newValues});
+    if (! (res['modifiedCount'] == 1)) return "FAIL";
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL";
+  }
+  return "SUCCESS"
+}
 
 async function addBay(bay,dbo){
   if (!(bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
@@ -529,6 +562,9 @@ async function mongoUpdate(tray, method) {
   	  case "addZone":
   	    code = await addZone(tray,dbo);
   	  	break;
+      case "editZone":
+        code = await editZone(tray,dbo);
+        break;
   	  case "switchTray":
 		code = await switchTray(tray, dbo);
 		break;
