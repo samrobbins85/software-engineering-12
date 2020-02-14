@@ -208,9 +208,7 @@ async function addTray(tray, dbo) {
     return "FAIL";
   }
 
-  let timeLength = tray["expiry"].length;
-
-  if (timeLength == 4) {
+  if (tray["expiry"].length == 4) {
     let x = new Date(parseInt(tray["expiry"]), 11, 31, 23, 59, 59);
     tray["expiry"] = x.getTime();
   }
@@ -267,6 +265,16 @@ async function editTray(tray, dbo) {
   if (tray['xPos'] < 0 || tray['yPos'] < 0) {
     console.log("Position must be within the valid range! (Positive Integer)");
     return "FAIL";
+  }
+
+  if (tray["expiry"].length == 4) {
+    let x = new Date(parseInt(tray["expiry"]), 11, 31, 23, 59, 59);
+    tray["expiry"] = x.getTime();
+  }
+  else {
+    let expiryArray = tray["expiry"].split("/");
+    let x = new Date(parseInt(expiryArray[1]), (parseInt(expiryArray[0])-1), 1, 0, 0, 0);
+    tray["expiry"] = x.getTime();
   }
 
   try {
