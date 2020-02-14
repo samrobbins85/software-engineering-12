@@ -208,7 +208,19 @@ async function addTray(tray, dbo) {
     return "FAIL";
   }
 
-  var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "xPos": tray["xPos"], "yPos": tray["yPos"]};
+  let timeLength = tray["expiry"].length;
+  let expiryDate;
+
+  if (timeLength == 4) {
+    let x = new Date(parseInt(tray["expiry"]), 12, 31, 23, 59, 59, 999);
+    let expiryDate = x.getTime();
+  }
+  else {
+    let expiryArray = expiryDate.split("/");
+    let x = new Date(parseInt(expiryArray[0]), parseInt(expiryArray[1]), 31, 23, 59, 59, 999);
+  }
+
+  var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "contents": tray["contents"], "weight": tray["weight"], "expiry": expiryDate, "xPos": tray["xPos"], "yPos": tray["yPos"]};
 
   try {
     let res = await dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true});
