@@ -220,6 +220,7 @@ async function addTray(tray, dbo) {
     let x = new Date(parseInt(expiryArray[0]), parseInt(expiryArray[1]), 31, 23, 59, 59, 999);
     expiryDate = x.getTime();
   }
+  console.log(expiryDate);
 
   var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "contents": tray["contents"], "weight": tray["weight"], "expiry": expiryDate, "xPos": tray["xPos"], "yPos": tray["yPos"]};
 
