@@ -384,11 +384,28 @@ async function getTraysInBay(bay, dbo) {
     return "FAIL";
   }
 
-	// bay is json object containing zone and bay identifier. No need to specify tray
-	let pos = {"zone": bay["zone"], "bay": bay["bay"]};
+  // bay is json object containing zone and bay identifier. No need to specify tray
+  let pos = {"zone": bay["zone"], "bay": bay["bay"]};
 
   let trays = await dbo.collection("food").find(pos).toArray();
-	return trays;
+  return trays;
+}
+
+async function getBaysInZone(zone, dbo) {
+  if (!(zone.hasOwnProperty('name'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (!(typeof(zone['name']) === "string")) {
+    console.log("Zone name must be a string");
+    return "FAIL";
+  }
+
+  let pos = {"zone": zone["name"]};
+
+  let trays = await dbo.collection("bays").find(pos).toArray();
+  return trays;
 }
 
 // Moves a tray
