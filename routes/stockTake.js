@@ -212,12 +212,12 @@ async function addTray(tray, dbo) {
   let expiryDate
 
   if (timeLength == 4) {
-    let x = new Date(parseInt(tray["expiry"]), 12, 31, 23, 59, 59, 999);
+    let x = new Date(parseInt(tray["expiry"]), 12, 31, 23, 59, 59);
     expiryDate = x.getTime();
   }
   else {
     let expiryArray = tray["expiry"].split("/");
-    let x = new Date(parseInt(expiryArray[0]), parseInt(expiryArray[1]), 31, 23, 59, 59, 999);
+    let x = new Date(parseInt(expiryArray[0]), parseInt(expiryArray[1]), 31, 23, 59, 59);
     expiryDate = x.getTime();
   }
   console.log(expiryDate);
