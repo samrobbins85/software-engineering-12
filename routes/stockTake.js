@@ -85,6 +85,33 @@ async function editZone(zone, dbo) {
   return "SUCCESS"
 }
 
+// called by mongoUpdate to build request to mongoDB to remove zone
+async function removeZone(zone, dbo) {
+  if (! (bay.hasOwnProperty('zone'))) {
+    console.log("Malformed request");
+    return "FAIL";
+  }
+
+  if (! (typeof(zone['zone']) == "string")) {
+    console.log("Zone identifier must be a string.");
+    return "FAIL";
+  }
+
+  // TODO: Check if items still in zone
+
+  let pos = {"zone": zone["zone"]};
+
+  try {
+    let res = await dbo.collection("zones").remove(pos);
+    if (! (res['result']['n'] == 1)) return "FAIL";
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL";
+  }
+
+  return "SUCCESS";
+}
+
 async function addBay(bay,dbo){
   if (!(bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
     console.log("Malformed request!");
