@@ -61,15 +61,6 @@ async function addZone(zone, dbo){
     console.log(ex);
     return "FAIL";
   }
-  //try {
-    //dbo.collection("zones").insertOne(myobj, function(err, res) {
-      //if (err) throw err;
-      //if (! (res['insertedCount'] == 1)) throw "Did not insert new zone";
-    //});
-  //} catch (ex) {
-    //console.log(ex);
-    //return "FAIL"
-  //}
   return "SUCCESS"
 }
 
@@ -163,15 +154,6 @@ async function addBay(bay,dbo){
     console.log(ex);
     return "FAIL";
   }
-  //try {
-    //dbo.collection("bays").insertOne(myobj, function(err, res) {
-      //if (err) throw err;
-      //if (! (res['insertedCount'] == 1)) throw "Did not insert new bay";
-    //});
-  //} catch (ex) {
-    //console.log(ex);
-    //return "FAIL"
-  //}
   return "SUCCESS"
 }
 
@@ -240,15 +222,6 @@ async function removeBay(bay, dbo) {
     console.log(ex);
     return "FAIL";
   }
-  //try {
-    //dbo.collection("bays").remove(pos, function(err, res) {
-      //if (err) throw err;
-      //if (! (res['result']['n'] == 1)) throw "No Document was deleted";
-    //});
-  //} catch (ex) {
-		//console.log(ex);
-    //return "FAIL";
-  //}
   return "SUCCESS";
 }
 
@@ -298,16 +271,6 @@ async function addTray(tray, dbo) {
     console.log(ex);
     return "FAIL";
   }
-
-  //try {
-    //dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true}, function(err, res) { // Use upsert to add if it does not already exist.
-      //if (err) throw err;
-      //if (! (res['upsertedCount'] == 1)) throw "No document was inserted";
-    //});
-  //} catch (ex) {
-		//console.log(ex);
-    //return "FAIL"
-  //}
   return "SUCCESS"
 }
 
@@ -376,15 +339,6 @@ async function editTray(tray, dbo) {
     return "FAIL";
   }
 
-  //try {
-    //dbo.collection("food").updateOne(pos, {"$set": newValues}, function(err, res) {
-      //if (err) throw err;
-      //if (! (res['modifiedCount'] == 1)) throw "No Document was modified";
-    //});
-  //} catch (ex) {
-		//console.log(ex);
-    //return "FAIL"
-  //}
   return "SUCCESS"
 }
 
