@@ -401,7 +401,6 @@ async function removeTray(tray, dbo) {
 }
 
 // called by mongoUpdate to build request to mongoDB to switch tray
-// TODO: Check if Mongodb executes the requests
 async function switchTray(body, dbo) {
   if (!(body.hasOwnProperty('first') && body.hasOwnProperty('second'))) {
     console.log("Malformed request!");
@@ -440,10 +439,18 @@ async function switchTray(body, dbo) {
 			console.log(e); // what is e?
 			return "FAIL";	
 		} else {
+      if (a.length() != 1 || b.length() != 1) {
+        console.log("Tray does not exist!");
+        return "FAIL";
+      }
 			const setA = dbo.collection("food").replaceOne(first, {$set: second});
 			const setB = dbo.collection("food").replaceOne(second, {$set: first});
 
-			await Promise.all([setA, setB]);
+			const [sa, sb] = await Promise.all([setA, setB]);
+      if (sa['modifiedCount'] != 1 || sb['modifiedCount'] != 1) {
+        console.log("Failed to replace at specified locations!");
+        return "FAIL";
+      }
 			
 		}
 	} catch (e) {
@@ -489,7 +496,6 @@ async function getBaysInZone(zone, dbo) {
 }
 
 // Moves a tray
-// TODO: Check if MongoDB executes the commands
 async function moveTray(body, dbo) {
   if (!(body.hasOwnProperty('posStart') && body.hasOwnProperty('posTarget'))) {
     console.log("Malformed request!");
