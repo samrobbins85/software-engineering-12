@@ -207,17 +207,6 @@ async function editBay(bay, dbo) {
     console.log(ex);
     return "FAIL";
   }
-
-  //try {
-    //dbo.collection("bays").updateOne(pos, {"$set": newValues}, function(err, res) {
-      //if (err) throw err;
-      //if (! (res['modifiedCount'] == 1)) throw "Document not modified";
-      //console.log(res["modifiedCount"] + " document edited");
-    //});
-  //} catch (ex) {
-		//console.log(ex);
-    //return "FAIL";
-  //}
   return "SUCCESS";
 }
 
