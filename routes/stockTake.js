@@ -1,6 +1,29 @@
 var express = require('express');
 var router = express.Router();
 
+// Get all trays and return next n expiring
+async function getNextNExpiring(body, dbo) {
+  if (!(body.hasOwnProperty('n'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (!Number.isInteger(body['n'])) {
+    console.log("'n' must be an Integer");
+    return "FAIL";
+  }
+
+  const trays = await dbo.collection("food").find({}).toArray();
+  if (trays.length <= body['n']) {
+    console.log("Total trays is less than specified. Use all trays.");
+    trays.sort((a,b) => a.expiry - b.expiry);
+    return trays;
+  }
+
+  trays.sort((a,b) => a.expiry - b.expiry);
+  return trays.slice(0, body['n']);
+}
+
 // called by mongoUpdate to get all zones in the mongoDB
 async function getZones(dbo) {
   const zones = await dbo.collection("zones").find({}).toArray();
@@ -8,7 +31,40 @@ async function getZones(dbo) {
 }
 
 // called by mongoUpdate to add a new zone to the mongoDB
-function addZone(zone, dbo){
+async function addZone(zone, dbo){
+  if (!(zone.hasOwnProperty('zone') && zone.hasOwnProperty('height') && zone.hasOwnProperty('width'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (!(Number.isInteger(zone['height']) && Number.isInteger(zone['width']))) {
+    console.log("Height and width must be integers!");
+    return "FAIL";
+  }
+
+  if (!(zone['height'] > 0 && zone['width'] > 0)) {
+    console.log("Height and width must be more than zero!");
+    return "FAIL";
+  }
+
+  if (!(typeof(zone['name'] === "string"))) {
+    console.log("Zone identifier must be a string!");
+    return "FAIL";
+  }
+
+  var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"]};
+
+  try {
+    let res = await dbo.collection("zones").insertOne(myobj);
+    if (! (res['insertedCount'] == 1)) return "FAIL";
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL";
+  }
+  return "SUCCESS"
+}
+
+async function editZone(zone, dbo) {
   if (!(zone.hasOwnProperty('zone') && zone.hasOwnProperty('height') && zone.hasOwnProperty('width'))) {
     console.log("Malformed request!");
     return "FAIL";
@@ -29,21 +85,47 @@ function addZone(zone, dbo){
     return "FAIL";
   }
 
-  var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"]};
+  let pos = { name: zone["zone"] };
+  let newValues = { height: zone["height"], width: zone["width"] };
+
   try {
-    dbo.collection("zones").insertOne(myobj, function(err, res) {
-      if (err) throw err;
-      console.log("1 document inserted");
-    });
+    let res = dbo.collection("zones").updateOne(pos, {"$set": newValues});
+    if (! (res['modifiedCount'] == 1)) return "FAIL";
   } catch (ex) {
     console.log(ex);
-    return "FAIL"
+    return "FAIL";
   }
   return "SUCCESS"
 }
 
+// called by mongoUpdate to build request to mongoDB to remove zone
+async function removeZone(zone, dbo) {
+  if (! (bay.hasOwnProperty('zone'))) {
+    console.log("Malformed request");
+    return "FAIL";
+  }
 
-function addBay(bay,dbo){
+  if (! (typeof(zone['zone']) == "string")) {
+    console.log("Zone identifier must be a string.");
+    return "FAIL";
+  }
+
+  // TODO: Check if items still in zone
+
+  let pos = {"zone": zone["zone"]};
+
+  try {
+    let res = await dbo.collection("zones").remove(pos);
+    if (! (res['result']['n'] == 1)) return "FAIL";
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL";
+  }
+
+  return "SUCCESS";
+}
+
+async function addBay(bay,dbo){
   if (!(bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
     console.log("Malformed request!");
     return "FAIL";
@@ -66,19 +148,17 @@ function addBay(bay,dbo){
 
   var myobj = { "name": bay["bay"], "zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]], "size": [bay["xSize"], bay["ySize"]]}
   try {
-    dbo.collection("bays").insertOne(myobj, function(err, res) {
-      if (err) throw err;
-      console.log("1 document inserted");
-    });
+    let res = await dbo.collection("bays").insertOne(myobj);
+    if (! (res['insertedCount'] == 1)) return "FAIL";
   } catch (ex) {
     console.log(ex);
-    return "FAIL"
+    return "FAIL";
   }
   return "SUCCESS"
 }
 
 // called by mongoUpdate to build request to mongoDB to edit bay
-function editBay(bay, dbo) {
+async function editBay(bay, dbo) {
   if (! (bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
     console.log("Malformed request");
     return "FAIL";
@@ -101,20 +181,19 @@ function editBay(bay, dbo) {
 
   let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
   let newValues = {"size": [bay["xSize"], bay["ySize"]]};
+
   try {
-    dbo.collection("bays").updateOne(pos, {"$set": newValues}, function(err, res) {
-      if (err) throw err;
-      console.log(res["modifiedCount"] + " document edited");
-    });
+    let res = dbo.collection("bays").updateOne(pos, {"$set": newValues});
+    if (! (res['modifiedCount'] == 1)) return "FAIL";
   } catch (ex) {
-		console.log(ex);
+    console.log(ex);
     return "FAIL";
   }
   return "SUCCESS";
 }
 
 // called by mongoUpdate to build request to mongoDB to remove bay
-function removeBay(bay, dbo) {
+async function removeBay(bay, dbo) {
   if (! (bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal'))) {
     console.log("Malformed request");
     return "FAIL";
@@ -135,21 +214,20 @@ function removeBay(bay, dbo) {
   }
 
   let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
+  
   try {
-    dbo.collection("bays").remove(pos, function(err, res) {
-      if (err) throw err;
-      console.log("Deleted tray at Zone: " + pos["zone"] + ", Bay: (" + pos["position"][0] + ", " + pos["position"][1] + ").");
-    });
+    let res = await dbo.collection("bays").remove(pos);
+    if (! (res['result']['n'] == 1)) return "FAIL";
   } catch (ex) {
-		console.log(ex);
+    console.log(ex);
     return "FAIL";
   }
   return "SUCCESS";
 }
 
 // called by mongoUpdate to build request to mongoDB to add tray
-function addTray(tray, dbo) {
-  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight'))) {
+async function addTray(tray, dbo) {
+  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight') && tray.hasOwnProperty('xPos') && tray.hasOwnProperty('yPos'))) {
     console.log("Malformed request!");
     return "FAIL";
   }
@@ -160,25 +238,44 @@ function addTray(tray, dbo) {
   }
 
   if (!(typeof(tray['weight']) === "number")) {
-    consolee.log("Weight must be a number!");
+    console.log("Weight must be a number!");
     return "FAIL";
   }
 
-  var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "xPos": tray["xPos"], "yPos": bay["yPos"]};
+  if (! (Number.isInteger(tray['xPos']) && Number.isInteger(tray['yPos']))) {
+    console.log("Position attributes must be integers");
+    return "FAIL";
+  }
+
+  if (tray['xPos'] < 0 || tray['yPos'] < 0) {
+    console.log("Position must be within the valid range! (Positive Integer)");
+    return "FAIL";
+  }
+
+  if (tray["expiry"].length == 4) {
+    let x = new Date(parseInt(tray["expiry"]), 11, 31, 23, 59, 59);
+    tray["expiry"] = x.getTime();
+  }
+  else {
+    let expiryArray = tray["expiry"].split("/");
+    let x = new Date(parseInt(expiryArray[1]), (parseInt(expiryArray[0])-1), 1, 0, 0, 0);
+    tray["expiry"] = x.getTime();
+  }
+
+  var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "contents": tray["contents"], "weight": tray["weight"], "expiry": tray["expiry"], "xPos": tray["xPos"], "yPos": tray["yPos"]};
+
   try {
-    dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true}, function(err, res) { // Use upsert to add if it does not already exist.
-      if (err) throw err;
-      console.log(res["upsertedCount"] + " document inserted");
-    });
+    let res = await dbo.collection("food").updateOne(pos, {"$set": tray}, {"upsert": true});
+    if (! (res['upsertedCount'] == 1)) return "FAIL";
   } catch (ex) {
-		console.log(ex);
-    return "FAIL"
+    console.log(ex);
+    return "FAIL";
   }
   return "SUCCESS"
 }
 
 // called by mongoUpdate to build request to mongoDB to edit tray
-function editTray(tray, dbo) {
+async function editTray(tray, dbo) {
   if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray,hasOwnProperty('weight'))) {
     console.log("Malformed request!");
     return "FAIL";
@@ -190,26 +287,63 @@ function editTray(tray, dbo) {
   }
 
   if (!(typeof(tray['weight']) === "number")) {
-    consolee.log("Weight must be a number!");
+    console.log("Weight must be a number!");
     return "FAIL";
   }
 
-  let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
-  let newValues = {"contents": tray["contents"], "weight": tray["weight"], "expiry": tray["expiry"]};
-  try {
-    dbo.collection("food").updateOne(pos, {"$set": newValues}, function(err, res) {
-      if (err) throw err;
-      console.log(res["modifiedCount"] + " document edited");
-    });
-  } catch (ex) {
-		console.log(ex);
-    return "FAIL"
+  if (! (Number.isInteger(tray['xPos']) && Number.isInteger(tray['yPos']))) {
+    console.log("Position attributes must be integers");
+    return "FAIL";
   }
+
+  if (tray['xPos'] < 0 || tray['yPos'] < 0) {
+    console.log("Position must be within the valid range! (Positive Integer)");
+    return "FAIL";
+  }
+
+  if (tray["expiry"].length == 4) {
+    let x = new Date(parseInt(tray["expiry"]), 11, 31, 23, 59, 59);
+    tray["expiry"] = x.getTime();
+  }
+  else {
+    let expiryArray = tray["expiry"].split("/");
+    let x = new Date(parseInt(expiryArray[1]), (parseInt(expiryArray[0])-1), 1, 0, 0, 0);
+    tray["expiry"] = x.getTime();
+  }
+
+  try {
+      collectionSize = dbo.collection("food").find({
+          "zone": tray["zone"],
+          "bay": tray["bay"],
+          "xPos": {$gt: tray["xPos"]},
+          "yPos": {$gt: tray["yPos"]}
+      }).limit(1).length()
+
+      if (collectionSize > 0) {
+          console.log("Trays will be deleted if this action is performed - please delete trays first.")
+          return "FAIL"
+      }
+  } catch (ex) {
+      console.log(ex);
+      return "FAIL"
+  }
+
+  let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
+  let newValues = {"contents": tray["contents"], "weight": tray["weight"], "expiry": tray["expiry"], "xPos": tray["xPos"], "yPos": tray["yPos"]};
+
+  try {
+    let res = await dbo.collection("food").updateOne(pos, {"$set": newValues});
+    if (! (res['modifiedCount'] == 1)) return "FAIL";
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL";
+  }
+
   return "SUCCESS"
 }
 
 // called by mongoUpdate to build request to mongoDB to remove tray
-function removeTray(tray, dbo) {
+async function removeTray(tray, dbo) {
   if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray'))) {
     console.log("Malformed request!");
     return "FAIL";
@@ -222,12 +356,10 @@ function removeTray(tray, dbo) {
 
   let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
   try {
-    dbo.collection("food").remove(pos, function(err, res) {
-      if (err) throw err;
-      console.log("Deleted tray at Zone: " + pos["zone"] + ", Bay: " + pos["bay"] + ", Tray: " + pos["tray"]);
-    });
+    let res = await dbo.collection("food").remove(pos);
+    if (! (res['result']['n'] == 1)) return "FAIL";
   } catch (ex) {
-		console.log(ex);
+    console.log(ex);
     return "FAIL";
   }
   return "SUCCESS";
@@ -272,10 +404,18 @@ async function switchTray(body, dbo) {
 			console.log(e); // what is e?
 			return "FAIL";	
 		} else {
+      if (a.length != 1 || b.length != 1) {
+        console.log("Tray does not exist!");
+        return "FAIL";
+      }
 			const setA = dbo.collection("food").replaceOne(first, {$set: second});
 			const setB = dbo.collection("food").replaceOne(second, {$set: first});
 
-			await Promise.all([setA, setB]);
+			const [sa, sb] = await Promise.all([setA, setB]);
+      if (sa['modifiedCount'] != 1 || sb['modifiedCount'] != 1) {
+        console.log("Failed to replace at specified locations!");
+        return "FAIL";
+      }
 			
 		}
 	} catch (e) {
@@ -296,14 +436,31 @@ async function getTraysInBay(bay, dbo) {
     return "FAIL";
   }
 
-	// bay is json object containing zone and bay identifier. No need to specify tray
-	let pos = {"zone": bay["zone"], "bay": bay["bay"]};
+  // bay is json object containing zone and bay identifier. No need to specify tray
+  let pos = {"zone": bay["zone"], "bay": bay["bay"]};
 
   let trays = await dbo.collection("food").find(pos).toArray();
-	return trays;
+  return trays;
 }
 
-// Move Tray, not working yet.
+async function getBaysInZone(zone, dbo) {
+  if (!(zone.hasOwnProperty('name'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (!(typeof(zone['name']) === "string")) {
+    console.log("Zone name must be a string");
+    return "FAIL";
+  }
+
+  let pos = {"zone": zone["name"]};
+
+  let trays = await dbo.collection("bays").find(pos).toArray();
+  return trays;
+}
+
+// Moves a tray
 async function moveTray(body, dbo) {
   if (!(body.hasOwnProperty('posStart') && body.hasOwnProperty('posTarget'))) {
     console.log("Malformed request!");
@@ -343,7 +500,7 @@ async function moveTray(body, dbo) {
 		}
 		await dbo.collection("food").updateOne(posStart, {$set: posTarget}, function(err, res) {
 			if (err) throw err;
-
+      if (! (res['modifiedCount'] == 1)) throw "No Document was modified";
 		});
 	} catch (ex) {
 		console.log(ex);
@@ -353,7 +510,7 @@ async function moveTray(body, dbo) {
 }
 
 // called by routes with request body and method string
-async function mongoUpdate(tray, method) {
+async function mongoUpdate(body, method) {
   // Initialise MongoClient and define some constants
   let MongoClient = require('mongodb').MongoClient;
   const URL = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
@@ -377,44 +534,55 @@ async function mongoUpdate(tray, method) {
 
 		switch (method) {
 			case "add":
-  	    code = await addTray(tray, dbo);
+  	    code = await addTray(body, dbo);
   	  	break;
   	  case "edit" :
-  	    code = await editTray(tray, dbo);
+  	    code = await editTray(body, dbo);
   	  	break;
   	  case "remove":
-  	    code = await removeTray(tray, dbo);
+  	    code = await removeTray(body, dbo);
   	  	break;
   	  case "switch":
-  	    code = await switchTray(tray, dbo);
+  	    code = await switchTray(body, dbo);
   	  	break;
   	  case "getTraysInBay":
-  	    code = await getTraysInBay(tray, dbo);
+  	    code = await getTraysInBay(body, dbo);
   	  	break;
+      case "getBaysInZone":
+        code = await getBaysInZone(body, dbo);
+        break;
   	  case "moveTray":
-  	    code = await moveTray(tray, dbo);
+  	    code = await moveTray(body, dbo);
   	  	break;
   	  case "getZones":
   	    code = await getZones(dbo);
   	  	break;
   	  case "addZone":
-  	    code = await addZone(tray,dbo);
+  	    code = await addZone(body,dbo);
   	  	break;
+      case "editZone":
+        code = await editZone(body,dbo);
+        break;
   	  case "switchTray":
-		code = await switchTray(tray, dbo);
-		break;
+        code = await switchTray(body, dbo);
+        break;
       case "addBay":
-        code = await addBay(bay, dbo);
+        code = await addBay(body, dbo);
         break;
       case "editBay":
-        code = await editBay(bay, dbo);
+        code = await editBay(body, dbo);
         break;
       case "removeBay":
-        code = await removeBay(bay,dbo);
+        code = await removeBay(body,dbo);
+        break;
+      case "nextExpiring":
+        code = await getNextNExpiring(body, dbo);
+        console.log(code);
         break;
 		}
     if (code.constructor === Array || code.constructor === Object) {
       db.close();
+      console.log("is array or object");
       return code;
     }
 
@@ -512,7 +680,13 @@ router.post('/removeBay', async function(req, res, next){
 router.post('/getTraysInBay', async function(req, res, next) {
 	let _trays = await mongoUpdate(req.body, "getTraysInBay");
 	res.setHeader('Content-Type', 'application/json');
-  	res.status(200).send({trays: _trays});
+  res.status(200).send({trays: _trays});
+});
+
+router.post('/getBaysInZone', async function(req, res, next) {
+	let _bays = await mongoUpdate(req.body, "getTraysInBay");
+	res.setHeader('Content-Type', 'application/json');
+  	res.status(200).send({bays: _bays});
 });
 
 router.post('/moveTray', async function(req, res, next) {
@@ -532,5 +706,11 @@ router.post('/switchTray', async function (req, res, next) {
     res.sendStatus(200);
   }
 });
+
+router.post('/nextExpiring', async function (req, res, next) {
+  let trays = await mongoUpdate(req.body, "nextExpiring");
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).send({'trays': trays});
+})
 
 module.exports = router;
