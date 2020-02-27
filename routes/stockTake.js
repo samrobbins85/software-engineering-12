@@ -1,9 +1,30 @@
 var express = require('express');
 var router = express.Router();
 
+// Get all trays and return next n expiring
+async function getNextNExpiring(body, dbo) {
+  if (!(body.hasOwnProperty('n'))) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (!Number.isInteger(body['n'])) {
+    console.log("'n' must be an Integer");
+    return "FAIL";
+  }
+
+  const trays = await dbo.collection("food").find({}).toArray();
+  if (trays.length <= body['n']) {
+    console.log("Total trays is less than specified. Use all trays.");
+    return trays;
+  }
+
+  trays.sort((a,b) => a.expiry - b.expiry);
+  return trays.slice(0, body['n']);
+}
+
 // called by mongoUpdate to get all zones in the mongoDB
 async function getZones(dbo) {
-  // TODO: Checking succeeded
   const zones = await dbo.collection("zones").find({}).toArray();
 	return zones;
 }
@@ -439,7 +460,7 @@ async function switchTray(body, dbo) {
 			console.log(e); // what is e?
 			return "FAIL";	
 		} else {
-      if (a.length() != 1 || b.length() != 1) {
+      if (a.length != 1 || b.length != 1) {
         console.log("Tray does not exist!");
         return "FAIL";
       }
@@ -564,6 +585,7 @@ async function mongoUpdate(tray, method) {
     return "FAIL";
   }
 
+  // TODO: passing body, zone. is this valid?? <27-02-20, alex> //
   try {
     let code = "NO_METHOD";
 
@@ -599,8 +621,8 @@ async function mongoUpdate(tray, method) {
         code = await editZone(tray,dbo);
         break;
   	  case "switchTray":
-		code = await switchTray(tray, dbo);
-		break;
+        code = await switchTray(tray, dbo);
+        break;
       case "addBay":
         code = await addBay(bay, dbo);
         break;
@@ -610,9 +632,14 @@ async function mongoUpdate(tray, method) {
       case "removeBay":
         code = await removeBay(bay,dbo);
         break;
+      case "nextExpiring":
+        code = await getNextNExpiring(tray, dbo);
+        console.log(code);
+        break;
 		}
     if (code.constructor === Array || code.constructor === Object) {
       db.close();
+      console.log("is array or object");
       return code;
     }
 
@@ -710,7 +737,7 @@ router.post('/removeBay', async function(req, res, next){
 router.post('/getTraysInBay', async function(req, res, next) {
 	let _trays = await mongoUpdate(req.body, "getTraysInBay");
 	res.setHeader('Content-Type', 'application/json');
-  	res.status(200).send({trays: _trays});
+  res.status(200).send({trays: _trays});
 });
 
 router.post('/getBaysInZone', async function(req, res, next) {
@@ -736,5 +763,11 @@ router.post('/switchTray', async function (req, res, next) {
     res.sendStatus(200);
   }
 });
+
+router.post('/nextExpiring', async function (req, res, next) {
+  let trays = await mongoUpdate(req.body, "nextExpiring");
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).send({'trays': trays});
+})
 
 module.exports = router;

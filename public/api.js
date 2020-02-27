@@ -5,6 +5,20 @@ const STOCK_API_URL = "/stockTake/"
 // TODO: Parameter checking in functions. EG. all attributes, etc.
 // TODO: Return values from fetch
 
+async function getNextNExpiring(n) {
+  let res = await fetch(STOCK_API_URL + "nextExpiring", {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({'n': n})
+  })
+    .then(res => res.json());
+  return res;
+}
+
+
 // API call to add tray
 /*
 	Inputs:
