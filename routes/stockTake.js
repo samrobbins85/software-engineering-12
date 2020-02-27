@@ -567,7 +567,7 @@ async function moveTray(body, dbo) {
 }
 
 // called by routes with request body and method string
-async function mongoUpdate(tray, method) {
+async function mongoUpdate(body, method) {
   // Initialise MongoClient and define some constants
   let MongoClient = require('mongodb').MongoClient;
   const URL = "mongodb+srv://new-user:s0ulDgUFcCS72lxR@cluster0-oxrvp.mongodb.net/test?retryWrites=true&w=majority";
@@ -586,55 +586,54 @@ async function mongoUpdate(tray, method) {
     return "FAIL";
   }
 
-  // TODO: passing body, zone. is this valid?? <27-02-20, alex> //
   try {
     let code = "NO_METHOD";
 
 		switch (method) {
 			case "add":
-  	    code = await addTray(tray, dbo);
+  	    code = await addTray(body, dbo);
   	  	break;
   	  case "edit" :
-  	    code = await editTray(tray, dbo);
+  	    code = await editTray(body, dbo);
   	  	break;
   	  case "remove":
-  	    code = await removeTray(tray, dbo);
+  	    code = await removeTray(body, dbo);
   	  	break;
   	  case "switch":
-  	    code = await switchTray(tray, dbo);
+  	    code = await switchTray(body, dbo);
   	  	break;
   	  case "getTraysInBay":
-  	    code = await getTraysInBay(tray, dbo);
+  	    code = await getTraysInBay(body, dbo);
   	  	break;
       case "getBaysInZone":
-        code = await getBaysInZone(zone, dbo);
+        code = await getBaysInZone(body, dbo);
         break;
   	  case "moveTray":
-  	    code = await moveTray(tray, dbo);
+  	    code = await moveTray(body, dbo);
   	  	break;
   	  case "getZones":
   	    code = await getZones(dbo);
   	  	break;
   	  case "addZone":
-  	    code = await addZone(tray,dbo);
+  	    code = await addZone(body,dbo);
   	  	break;
       case "editZone":
-        code = await editZone(tray,dbo);
+        code = await editZone(body,dbo);
         break;
   	  case "switchTray":
-        code = await switchTray(tray, dbo);
+        code = await switchTray(body, dbo);
         break;
       case "addBay":
-        code = await addBay(bay, dbo);
+        code = await addBay(body, dbo);
         break;
       case "editBay":
-        code = await editBay(bay, dbo);
+        code = await editBay(body, dbo);
         break;
       case "removeBay":
-        code = await removeBay(bay,dbo);
+        code = await removeBay(body,dbo);
         break;
       case "nextExpiring":
-        code = await getNextNExpiring(tray, dbo);
+        code = await getNextNExpiring(body, dbo);
         console.log(code);
         break;
 		}
