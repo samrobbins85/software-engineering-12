@@ -16,6 +16,7 @@ async function getNextNExpiring(body, dbo) {
   const trays = await dbo.collection("food").find({}).toArray();
   if (trays.length <= body['n']) {
     console.log("Total trays is less than specified. Use all trays.");
+    trays.sort((a,b) => a.expiry - b.expiry);
     return trays;
   }
 
