@@ -1,6 +1,44 @@
 var express = require('express');
 var router = express.Router();
 
+// The "Many" functions take a list of JSON objects
+async function addTrayMany(body, dbo) {
+  if (!body) {
+    console.error("Input is not defined.");
+    return "FAIL"
+  }
+
+  if (!Array.isArray(body)) {
+    console.error("Input is not an array!");
+    return "FAIL";
+  }
+
+  if (body.length === 0) {
+    console.error("Input array is empty!");
+    return "FAIL";
+  }
+
+  // TODO: type check all documents in array <07-03-20, alex> //
+  try {
+    // TODO: possible to change to updateMany with upsert? <07-03-20, alex> //
+    let res = await dbo.collection("food").insertMany(body);
+    if (! (res['insertedCount'] === body.length)) return "FAIL";
+  } catch (ex) {
+    /* handle error */
+    console.error(ex);
+    return "FAIL";
+  }
+  return "SUCCESS";
+}
+
+async function editTrayMany(body, dbo) {
+
+}
+
+async function removeTrayMany(body, dbo) {
+
+}
+
 // Get all trays and return next n expiring
 async function getNextNExpiring(body, dbo) {
   if (!(body.hasOwnProperty('n'))) {
