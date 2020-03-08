@@ -325,13 +325,13 @@ async function addTray(tray, dbo) {
     return "FAIL";
   }
 
-  if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string" && typeof(tray['contents']) === "string" && typeof(tray['expiry']) === "string")) {
+  if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string" && typeof(tray['contents']) === "string")) {
     console.log("Zone, bay, tray, contents and expiry must be strings!");
     return "FAIL";
   }
 
-  if (!(typeof(tray['weight']) === "number")) {
-    console.log("Weight must be a number!");
+  if (!(Number.isInteger(tray['weight']) && Number.isInteger['expiry'])) {
+    console.log("Weight, expiry must be integers!");
     return "FAIL";
   }
 
@@ -345,6 +345,7 @@ async function addTray(tray, dbo) {
     return "FAIL";
   }
 
+  // TODO: deprecated? should be unix time <08-03-20, alex> //
   if (tray["expiry"].length == 4) {
     let x = new Date(parseInt(tray["expiry"]), 11, 31, 23, 59, 59);
     tray["expiry"] = x.getTime();
@@ -374,13 +375,13 @@ async function editTray(tray, dbo) {
     return "FAIL";
   }
 
-  if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string" && typeof(tray['contents']) === "string" && typeof(tray['expiry']) === "string")) {
+  if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string" && typeof(tray['contents']) === "string")) {
     console.log("Zone, bay, tray, contents and expiry must be strings!");
     return "FAIL";
   }
 
-  if (!(typeof(tray['weight']) === "number")) {
-    console.log("Weight must be a number!");
+  if (!(Number.isInteger(tray['weight']) && Number.isInteger['expiry'])) {
+    console.log("Weight, expiry must be integers!");
     return "FAIL";
   }
 
