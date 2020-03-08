@@ -3,7 +3,42 @@ const STOCK_API_URL = "/stockTake/"
 // REMEMBER: When calling async function you must add await before
 
 // TODO: Parameter checking in functions. EG. all attributes, etc.
-// TODO: Return values from fetch
+
+// API call to add many trays
+/*
+ * Inputs:
+ *  trays: Array of Tray JSON Objects
+ * Returns:
+ *  Code: Either "OK" or "FAIL"
+ *
+*/ 
+async function addTrayMany(trays) {
+  
+}
+
+// API call to edit many trays
+/*
+ * Inputs:
+ *  trays: Array of Tray JSON Objects
+ * Returns:
+ *  Code: Either "OK" or "FAIL"
+ *
+*/ 
+async function editTrayMany() {
+  
+}
+
+// API call to remove many trays
+/*
+ * Inputs:
+ *  trayPositions: Array of JSON Objects containing fields zone, bay and tray
+ * Returns:
+ *  Code: Either "OK" or "FAIL"
+ *
+*/ 
+async function removeTrayMany() {
+  
+}
 
 async function getNextNExpiring(n) {
   let res = await fetch(STOCK_API_URL + "nextExpiring", {
