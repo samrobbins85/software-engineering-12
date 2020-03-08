@@ -47,6 +47,21 @@ async function editTrayMany(body, dbo) {
     return "FAIL";
   }
 
+  // TODO: Validation of each individual item <08-03-20, alex> //
+  try {
+    let pos = []
+    for (let i = 0; i < body.length; i++) {
+      pos.push({"zone": body[i]["zone"], "bay": body[i]["zone"], "tray": body[i]["tray"]});
+    }
+    let res = dbo.collection("food").updateMany({"$or": pos}, body)
+    // TODO: should similar also be matchedCount? <08-03-20, alex> //
+    if (! (res['matchedCount'] == len(body))) return "FAIL"
+  } catch (ex) {
+    /* handle error */
+    console.error(ex);
+    return "FAIL";
+  }
+  return "SUCCESS";
 }
 
 // List of tray positions
