@@ -13,6 +13,19 @@ const STOCK_API_URL = "/stockTake/"
  *
 */ 
 async function addTrayMany(trays) {
+  let res = await fetch(STOCK_API_URL + "addTrayMany", {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(trays)
+  })
+
+  if (res.ok) {
+    return "OK";
+  }
+  return "FAIL";
 
 }
 
@@ -24,7 +37,20 @@ async function addTrayMany(trays) {
  *  Code: Either "OK" or "FAIL"
  *
 */ 
-async function editTrayMany() {
+async function editTrayMany(trays) {
+  let res = await fetch(STOCK_API_URL + "editTrayMany", {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(trays)
+  })
+
+  if (res.ok) {
+    return "OK";
+  }
+  return "FAIL";
   
 }
 
@@ -36,8 +62,20 @@ async function editTrayMany() {
  *  Code: Either "OK" or "FAIL"
  *
 */ 
-async function removeTrayMany() {
-  
+async function removeTrayMany(trayPositions) {
+  let res = await fetch(STOCK_API_URL + "removeTrayMany", {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(trayPositions)
+  })
+
+  if (res.ok) {
+    return "OK";
+  }
+  return "FAIL";
 }
 
 async function getNextNExpiring(n) {
@@ -166,7 +204,6 @@ async function moveTray(start, target) {
     return "FAIL";
 }
 
-// TODO: Implement this end point
 // API call to swap two trays
 /*
 	Inputs:
