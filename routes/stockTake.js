@@ -32,11 +32,49 @@ async function addTrayMany(body, dbo) {
 }
 
 async function editTrayMany(body, dbo) {
+  if (!body) {
+    console.error("Input is not defined.");
+    return "FAIL"
+  }
+
+  if (!Array.isArray(body)) {
+    console.error("Input is not an array!");
+    return "FAIL";
+  }
+
+  if (body.length === 0) {
+    console.error("Input array is empty!");
+    return "FAIL";
+  }
 
 }
 
+// List of tray positions
 async function removeTrayMany(body, dbo) {
+  if (!body) {
+    console.error("Input is not defined.");
+    return "FAIL"
+  }
 
+  if (!Array.isArray(body)) {
+    console.error("Input is not an array!");
+    return "FAIL";
+  }
+
+  if (body.length === 0) {
+    console.error("Input array is empty!");
+    return "FAIL";
+  }
+
+  // TODO: validation of each individual item <07-03-20, alex> //
+  try {
+    let res = dbo.collection("food").deleteMany({"$or": body})
+    if (! (res['deletedCount'] == len(body))) return "FAIL";
+  } catch (ex) {
+    console.error(ex);
+    return "FAIL";
+  }
+  return "SUCCESS";
 }
 
 // Get all trays and return next n expiring
@@ -51,6 +89,7 @@ async function getNextNExpiring(body, dbo) {
     return "FAIL";
   }
 
+  // TODO: find next N in a category <07-03-20, alex> //
   const trays = await dbo.collection("food").find({}).toArray();
   if (trays.length <= body['n']) {
     console.log("Total trays is less than specified. Use all trays.");
