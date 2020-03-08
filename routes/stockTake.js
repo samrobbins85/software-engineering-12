@@ -669,7 +669,15 @@ async function mongoUpdate(body, method) {
         break;
       case "nextExpiring":
         code = await getNextNExpiring(body, dbo);
-        console.log(code);
+        break;
+      case "addTrayMany":
+        code = await addTrayMany(body, dbo);
+        break;
+      case "editTrayMany":
+        code = await editTrayMany(body, dbo);
+        break;
+      case "removeTrayMany":
+        code = await removeTrayMany(body, dbo);
         break;
 		}
     if (code.constructor === Array || code.constructor === Object) {
@@ -803,6 +811,33 @@ router.post('/nextExpiring', async function (req, res, next) {
   let trays = await mongoUpdate(req.body, "nextExpiring");
   res.setHeader('Content-Type', 'application/json');
   res.status(200).send({'trays': trays});
+})
+
+router.post('/addTrayMany', async function (req, res, next) {
+  let code = await mongoUpdate(req.body, "addTrayMany")
+  if (code !== "SUCCESS") {
+    res.sendStatus(400);
+  } else {
+    res.sendStatus(200);
+  }
+})
+
+router.post('/editTrayMany', async function (req, res, next) {
+  let code = await mongoUpdate(req.body, "editTrayMany")
+  if (code !== "SUCCESS") {
+    res.sendStatus(400);
+  } else {
+    res.sendStatus(200);
+  }
+})
+
+router.post('/removeTrayMany', async function (req, res, next) {
+  let code = await mongoUpdate(req.body, "removeTrayMany")
+  if (code !== "SUCCESS") {
+    res.sendStatus(400);
+  } else {
+    res.sendStatus(200);
+  }
 })
 
 module.exports = router;

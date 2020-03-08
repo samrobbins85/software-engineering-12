@@ -13,7 +13,7 @@ const STOCK_API_URL = "/stockTake/"
  *
 */ 
 async function addTrayMany(trays) {
-  
+
 }
 
 // API call to edit many trays
