@@ -1,3 +1,4 @@
 node_modules/*
 .idea
 .tern-project
+mongodb_dummy.json

@@ -31,6 +31,8 @@ async function addTrayMany(body, dbo) {
   return "SUCCESS";
 }
 
+// Edit may trays simultaneously
+// TODO: test this! <08-03-20, alex> //
 async function editTrayMany(body, dbo) {
   if (!body) {
     console.error("Input is not defined.");
@@ -84,7 +86,6 @@ async function removeTrayMany(body, dbo) {
   // TODO: validation of each individual item <07-03-20, alex> //
   try {
     let res = await dbo.collection("food").deleteMany({"$or": body})
-    console.log(res);
     if (! (res['deletedCount'] == body.length)) return "FAIL";
   } catch (ex) {
     console.error(ex);
@@ -489,6 +490,7 @@ async function switchTray(body, dbo) {
     return "FAIL";
   }
   
+  // TODO: may be able to use mongoDB $ operators to improve this <08-03-20, alex> //
 	try {
 		const aPromise = dbo.collection("food").findOne(first);
 		const bPromise = dbo.collection("food").findOne(second);
