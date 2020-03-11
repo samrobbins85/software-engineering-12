@@ -185,7 +185,7 @@ async function getNextNExpiring(body, dbo) {
     return "FAIL";
   }
 
-  if (body.hasOwnProperty('contents') && typeof(body['contents'] === "string")) {
+  if (body.hasOwnProperty('contents') && !typeof(body['contents'] === "string")) {
     console.log("'category must be a string'");
     return "FAIL";
   }
