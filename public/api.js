@@ -365,6 +365,26 @@ async function removeBay(bay) {
   return "FAIL";
 
 }
+// API call to remove an exisiting zone
+/*
+	Inputs:
+		
+*/
+async function removeZone(zone) {
+  let res = await fetch(STOCK_API_URL + "removeZone", {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(zone)
+  });
+
+  if (res.ok) {
+      return "OK";
+  }
+  return "FAIL";
+}
 
 // API call to edit an exisiting zone
 /*
