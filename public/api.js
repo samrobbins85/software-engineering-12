@@ -78,6 +78,13 @@ async function removeTrayMany(trayPositions) {
   return "FAIL";
 }
 
+// API call to get all trays in a certain category
+/*
+ * Inputs:
+ *  contents: Find trays containing this item
+ * Returns:
+ *  List of tray objects that matched the condition
+*/  
 async function getAllCategory(contents) {
   let res = await fetch(STOCK_API_URL + "getAllCategory", {
     method: 'POST',
@@ -85,11 +92,20 @@ async function getAllCategory(contents) {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.string({'contents': contents})
+    body: JSON.stringify({'contents': contents})
   })
     .then(res => res.json());
   return res;
 }
+
+// API call to get the next N expiring trays
+/*
+ * Inputs:
+ *  n: Number of trays to get
+ *  contents: Optional, get next n with these contents
+ * Returns:
+ *  List of tray objects that matched conditions
+*/
 
 async function getNextNExpiring(n, contents=false) {
   let res = await fetch(STOCK_API_URL + "nextExpiring", {
@@ -98,7 +114,7 @@ async function getNextNExpiring(n, contents=false) {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: contents ? JSON.string({'n': n, 'contents': contents}) : JSON.stringify({'n': n})
+    body: contents ? JSON.stringify({'n': n, 'contents': contents}) : JSON.stringify({'n': n})
   })
     .then(res => res.json());
   return res;
