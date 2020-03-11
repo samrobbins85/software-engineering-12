@@ -683,6 +683,9 @@ async function mongoUpdate(body, method) {
       case "editZone":
         code = await editZone(body,dbo);
         break;
+      case "removeZone":
+        code = await removeZone(body, dbo);
+        break;
       case "addBay":
         code = await addBay(body, dbo);
         break;
@@ -876,6 +879,15 @@ router.post('/removeTrayMany', async function (req, res, next) {
 
 router.post('/editZone', async function (req, res, next) {
   let code = await mongoUpdate(req.body, "editZone");
+  if (code !== "SUCCESS") {
+    res.sendStatus(400);
+  } else {
+    res.sendStatus(200);
+  }
+})
+
+router.post('/removeZone', async function (req, res, next) {
+  let code = await mongoUpdate(req.body, "removeZone");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
