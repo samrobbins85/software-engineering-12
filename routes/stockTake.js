@@ -653,16 +653,16 @@ async function mongoUpdate(body, method) {
     let code = "NO_METHOD";
 
 		switch (method) {
-			case "add":
+			case "addTray":
   	    code = await addTray(body, dbo);
   	  	break;
-  	  case "edit" :
+  	  case "editTray" :
   	    code = await editTray(body, dbo);
   	  	break;
-  	  case "remove":
+  	  case "removeTray":
   	    code = await removeTray(body, dbo);
   	  	break;
-  	  case "switch":
+  	  case "switchTray":
   	    code = await switchTray(body, dbo);
   	  	break;
   	  case "getTraysInBay":
@@ -682,9 +682,6 @@ async function mongoUpdate(body, method) {
   	  	break;
       case "editZone":
         code = await editZone(body,dbo);
-        break;
-  	  case "switchTray":
-        code = await switchTray(body, dbo);
         break;
       case "addBay":
         code = await addBay(body, dbo);
@@ -752,7 +749,7 @@ router.post('/addZone', async function (req, res, next) {
 });
 
 router.post('/addTray', async function(req, res, next){
-  let code = await mongoUpdate(req.body, "add");
+  let code = await mongoUpdate(req.body, "addTray");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
@@ -761,7 +758,7 @@ router.post('/addTray', async function(req, res, next){
 }); 
 
 router.post('/editTray', async function(req, res, next){
-  let code = await mongoUpdate(req.body, "edit");
+  let code = await mongoUpdate(req.body, "editTray");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
@@ -770,7 +767,7 @@ router.post('/editTray', async function(req, res, next){
 }); 
 
 router.post('/removeTray', async function(req, res, next){
-  let code = await mongoUpdate(req.body, "remove");
+  let code = await mongoUpdate(req.body, "removeTray");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
@@ -780,7 +777,7 @@ router.post('/removeTray', async function(req, res, next){
 
 // Route to add bay.
 router.post('/addBay', async function(req, res, next){
-  let code = await mongoUpdate(req.body, "add");
+  let code = await mongoUpdate(req.body, "addBay");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
@@ -790,7 +787,7 @@ router.post('/addBay', async function(req, res, next){
 
 // Route to edit bay
 router.post('/editBay', async function(req, res, next){
-  let code = await mongoUpdate(req.body, "edit");
+  let code = await mongoUpdate(req.body, "editBay");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
@@ -800,7 +797,7 @@ router.post('/editBay', async function(req, res, next){
 
 // Route to remove bay
 router.post('/removeBay', async function(req, res, next){
-  let code = await  mongoUpdate(req.body, "remove");
+  let code = await  mongoUpdate(req.body, "removeBay");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {
@@ -815,7 +812,7 @@ router.post('/getTraysInBay', async function(req, res, next) {
 });
 
 router.post('/getBaysInZone', async function(req, res, next) {
-	let _bays = await mongoUpdate(req.body, "getTraysInBay");
+	let _bays = await mongoUpdate(req.body, "getBaysInZone");
 	res.setHeader('Content-Type', 'application/json');
   	res.status(200).send({bays: _bays});
 });
@@ -870,6 +867,15 @@ router.post('/editTrayMany', async function (req, res, next) {
 
 router.post('/removeTrayMany', async function (req, res, next) {
   let code = await mongoUpdate(req.body, "removeTrayMany")
+  if (code !== "SUCCESS") {
+    res.sendStatus(400);
+  } else {
+    res.sendStatus(200);
+  }
+})
+
+router.post('/editZone', async function (req, res, next) {
+  let code = await mongoUpdate(req.body, "editZone");
   if (code !== "SUCCESS") {
     res.sendStatus(400);
   } else {

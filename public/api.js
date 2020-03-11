@@ -189,24 +189,23 @@ async function getTraysInBay(pos) {
     return res;
 }
 
-// TODO: Implement this endpoint
 // API call to get all bays in the zone
 /*
 	Inputs:
 		pos: JSON Object containing target zone
 */
-async function getBaysInZone(pos) {
-    console.log("Endpoint getBays not implemented yet!");
-    return;
+async function getBaysInZone(zone) {
 
-    fetch(STOCK_API_URL + "getZone", {
+    let res = await fetch(STOCK_API_URL + "getBaysInZone", {
         method: 'POST',
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify()
-    });
+      body: JSON.stringify({"zone":zone})
+    })
+    .then(res => res.json());
+  return res
 }
 
 // API call to move a tray
@@ -283,15 +282,27 @@ async function addZone(zone) {
     return "FAIL";
 }
 
-// TODO: Implement this call
 // API call to add a new bay
 /*
 	Inputs:
-		
+		bay: Bay Object
+  Returns:
+    code: as usual
 */
-async function addBay() {
-    console.log("This call has not been implemented yet!");
-    return;
+async function addBay(bay) {
+    let res = await fetch(STOCK_API_URL + "addBay", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bay)
+    });
+
+    if (res.ok) {
+        return "OK";
+    }
+    return "FAIL";
 }
 
 // API call to edit an exisiting tray
@@ -317,26 +328,63 @@ async function editTray(tray) {
     return "FAIL";
 }
 
-// TODO: Implement this call
 // API call to edit an existing bay
 /*
 	Inputs:
 		
 */
-async function editBay() {
-    console.log("This call has not been implemented yet!");
-    return;
+async function editBay(bay) {
+    let res = await fetch(STOCK_API_URL + "editBay", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bay)
+    });
+
+    if (res.ok) {
+        return "OK";
+    }
+    return "FAIL";
 }
 
-// TODO: Implement this call
+async function removeBay(bay) {
+  let res = await fetch(STOCK_API_URL + "removeBay", {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(bay)
+  });
+
+  if (res.ok) {
+      return "OK";
+  }
+  return "FAIL";
+
+}
+
 // API call to edit an exisiting zone
 /*
 	Inputs:
 		
 */
-async function editZone() {
-    console.log("This call has not been implemented yet!");
-    return;
+async function editZone(zone) {
+  let res = await fetch(STOCK_API_URL + "editZone", {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(zone)
+  });
+
+  if (res.ok) {
+      return "OK";
+  }
+  return "FAIL";
 }
 
 // API call to get all zones
@@ -358,13 +406,3 @@ async function getZones() {
     return res;
 }
 
-// swapTray({
-//         zone: "Orangehhhhhhhhhhhhh",
-//         bay: "orange235555555",
-//         tray: "a1234jjjjjjjjjjjjjjjjjj"
-//     }, {
-//         zone: "Orange",
-//         bay: "orange",
-//         tray: "a1337"
-//     }
-// )
