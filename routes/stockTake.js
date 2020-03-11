@@ -94,6 +94,21 @@ async function removeTrayMany(body, dbo) {
   return "SUCCESS";
 }
 
+async function getAllCategory(body, dbo) {
+  if (!body.hasOwnProperty('contents')) {
+    console.log("Malformed request!");
+    return "FAIL";
+  }
+
+  if (!(typeof(body['contents'] === "string"))) {
+    console.log("'contents' must be a string");
+    return "FAIL";
+  }
+
+  const trays = await dbo.collection("food").find({"contents": body['contents']}).toArray();
+  return trays;
+}
+
 // Get all trays and return next n expiring
 async function getNextNExpiring(body, dbo) {
   if (!(body.hasOwnProperty('n'))) {
@@ -106,8 +121,17 @@ async function getNextNExpiring(body, dbo) {
     return "FAIL";
   }
 
-  // TODO: find next N in a category <07-03-20, alex> //
-  const trays = await dbo.collection("food").find({}).toArray();
+  if (body.hasOwnProperty('contents') && typeof(body['contents'] === "string")) {
+    console.log("'category must be a string'");
+    return "FAIL";
+  }
+
+  let trays;
+  if (body.hasOwnProperty('contents')) {
+    trays = await dbo.collection("food").find({"contents": body['contents']}).toArray();
+  } else {
+    trays = await dbo.collection("food").find({}).toArray();
+  }
   if (trays.length <= body['n']) {
     console.log("Total trays is less than specified. Use all trays.");
     trays.sort((a,b) => a.expiry - b.expiry);
@@ -671,6 +695,9 @@ async function mongoUpdate(body, method) {
       case "removeBay":
         code = await removeBay(body,dbo);
         break;
+      case "getAllCategory":
+        code = await getAllCategory(body, dbo);
+        break;
       case "nextExpiring":
         code = await getNextNExpiring(body, dbo);
         break;
@@ -810,6 +837,12 @@ router.post('/switchTray', async function (req, res, next) {
     res.sendStatus(200);
   }
 });
+
+router.post('/getAllCategory', async function (req, res, next) {
+  let trays = await mongoUpdate(req.body, "getAllCategory");
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).send({'trays': trays});
+})
 
 router.post('/nextExpiring', async function (req, res, next) {
   let trays = await mongoUpdate(req.body, "nextExpiring");
