@@ -18,9 +18,35 @@ async function addTrayMany(body, dbo) {
     return "FAIL";
   }
 
-  // TODO: type check all documents in array <07-03-20, alex> //
+  for (let i = 0; i < body.length; i++) {
+    tray = body[i];
+    if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight') && tray.hasOwnProperty('xPos') && tray.hasOwnProperty('yPos'))) {
+      console.log("Malformed request!");
+      return "FAIL";
+    }
+
+    if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string" && typeof(tray['contents']) === "string")) {
+      console.log("Zone, bay, tray, contents and expiry must be strings!");
+      return "FAIL";
+    }
+
+    if (!(Number.isInteger(tray['weight']) && Number.isInteger['expiry'])) {
+      console.log("Weight, expiry must be integers!");
+      return "FAIL";
+    }
+
+    if (! (Number.isInteger(tray['xPos']) && Number.isInteger(tray['yPos']))) {
+      console.log("Position attributes must be integers");
+      return "FAIL";
+    }
+
+    if (tray['xPos'] < 0 || tray['yPos'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+  }
+
   try {
-    // TODO: possible to change to updateMany with upsert? <07-03-20, alex> //
     let res = await dbo.collection("food").insertMany(body);
     if (! (res['insertedCount'] === body.length)) return "FAIL";
   } catch (ex) {
@@ -32,7 +58,6 @@ async function addTrayMany(body, dbo) {
 }
 
 // Edit may trays simultaneously
-// TODO: test this! <08-03-20, alex> //
 async function editTrayMany(body, dbo) {
   if (!body) {
     console.error("Input is not defined.");
@@ -49,7 +74,34 @@ async function editTrayMany(body, dbo) {
     return "FAIL";
   }
 
-  // TODO: Validation of each individual item <08-03-20, alex> //
+  for (let i = 0; i < body.length; i++) {
+    tray = body[i];
+    if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray,hasOwnProperty('weight'))) {
+      console.log("Malformed request!");
+      return "FAIL";
+    }
+
+    if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string" && typeof(tray['contents']) === "string")) {
+      console.log("Zone, bay, tray, contents and expiry must be strings!");
+      return "FAIL";
+    }
+
+    if (!(Number.isInteger(tray['weight']) && Number.isInteger['expiry'])) {
+      console.log("Weight, expiry must be integers!");
+      return "FAIL";
+    }
+
+    if (! (Number.isInteger(tray['xPos']) && Number.isInteger(tray['yPos']))) {
+      console.log("Position attributes must be integers");
+      return "FAIL";
+    }
+
+    if (tray['xPos'] < 0 || tray['yPos'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+  }
+
   try {
     let pos = []
     for (let i = 0; i < body.length; i++) {
@@ -83,7 +135,19 @@ async function removeTrayMany(body, dbo) {
     return "FAIL";
   }
 
-  // TODO: validation of each individual item <07-03-20, alex> //
+  for (let i = 0; i < body.length; i++) {
+    tray = body[i];
+    if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray'))) {
+      console.log("Malformed request!");
+      return "FAIL";
+    }
+
+    if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string")) {
+      console.log("Position attributes must be strings!");
+      return "FAIL";
+    }
+  }
+
   try {
     let res = await dbo.collection("food").deleteMany({"$or": body})
     if (! (res['deletedCount'] == body.length)) return "FAIL";
