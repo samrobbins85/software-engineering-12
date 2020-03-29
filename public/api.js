@@ -110,7 +110,7 @@ async function getAllCategory(contents) {
 async function getNextNExpiring(n, contents=false) {
   let res = await fetch(STOCK_API_URL + "nextExpiring", {
     method: 'POST',
-    mode: 'cors'e
+    mode: 'cors',
     headers: {
       'Content-Type': 'application/json'
     },
