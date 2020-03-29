@@ -341,7 +341,7 @@ async function addBay(bay,dbo){
 
 // called by mongoUpdate to build request to mongoDB to edit bay
 async function editBay(bay, dbo) {
-  if (! (bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
+  if (! (bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
     console.log("Malformed request");
     return "FAIL";
   }
@@ -361,8 +361,8 @@ async function editBay(bay, dbo) {
     return "FAIL";
   }
 
-  let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
-  let newValues = {"size": [bay["xSize"], bay["ySize"]]};
+  let pos = {"bay": bay["bay"], "zone": bay["zone"]};
+  let newValues = {"position": [bay["xVal"], bay["yVal"]], "size": [bay["xSize"], bay["ySize"]]};
 
   try {
     let res = dbo.collection("bays").updateOne(pos, {"$set": newValues});
@@ -376,17 +376,8 @@ async function editBay(bay, dbo) {
 
 // called by mongoUpdate to build request to mongoDB to remove bay
 async function removeBay(bay, dbo) {
-  if (! (bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal'))) {
+  if (! (bay.hasOwnProperty('zone') && bay.hasOwnProperty('bay'))) {
     console.log("Malformed request");
-    return "FAIL";
-  }
-  if (! (Number.isInteger(bay['xVal']) && Number.isInteger(bay['yVal']) )) {
-    console.log("Position and size must be integers!");
-    return "FAIL";
-  }
-
-  if (bay['xVal'] < 0 || bay['yVal'] < 0) {
-    console.log("Position must be within the valid range! (Positive Integer)");
     return "FAIL";
   }
 
@@ -395,7 +386,7 @@ async function removeBay(bay, dbo) {
     return "FAIL";
   }
 
-  let pos = {"zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]]};
+  let pos = {"zone": bay["zone"], "bay": bay["bay"]};
   
   try {
     let res = await dbo.collection("bays").remove(pos);
@@ -459,7 +450,7 @@ async function addTray(tray, dbo) {
 
 // called by mongoUpdate to build request to mongoDB to edit tray
 async function editTray(tray, dbo) {
-  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray,hasOwnProperty('weight'))) {
+  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight') && tray.hasOwnProperty('xPos') && tray.hasOwnProperty('yPos'))) {
     console.log("Malformed request!");
     return "FAIL";
   }
