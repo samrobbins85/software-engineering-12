@@ -875,13 +875,19 @@ router.post('/removeBay', async function(req, res, next){
 router.post('/getTraysInBay', async function(req, res, next) {
 	let _trays = await mongoUpdate(req.body, "getTraysInBay");
 	res.setHeader('Content-Type', 'application/json');
+  if (_trays === "FAIL") {
+    res.sendStatus(400);
+  }
   res.status(200).send({trays: _trays});
 });
 
 router.post('/getBaysInZone', async function(req, res, next) {
 	let _bays = await mongoUpdate(req.body, "getBaysInZone");
 	res.setHeader('Content-Type', 'application/json');
-  	res.status(200).send({bays: _bays});
+  if (_bays === "FAIL") {
+    res.sendStatus(400);
+  }
+  res.status(200).send({bays: _bays});
 });
 
 router.post('/moveTray', async function(req, res, next) {
@@ -905,12 +911,18 @@ router.post('/switchTray', async function (req, res, next) {
 router.post('/getAllCategory', async function (req, res, next) {
   let trays = await mongoUpdate(req.body, "getAllCategory");
   res.setHeader('Content-Type', 'application/json');
+  if (trays === "FAIL") {
+    res.sendStatus(400);
+  }
   res.status(200).send({'trays': trays});
 })
 
 router.post('/nextExpiring', async function (req, res, next) {
   let trays = await mongoUpdate(req.body, "nextExpiring");
   res.setHeader('Content-Type', 'application/json');
+  if (trays === "FAIL") {
+    res.sendStatus(400);
+  }
   res.status(200).send({'trays': trays});
 })
 

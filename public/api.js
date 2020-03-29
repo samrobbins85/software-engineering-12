@@ -94,7 +94,7 @@ async function getAllCategory(contents) {
     },
     body: JSON.stringify({'contents': contents})
   })
-    .then(res => res.json());
+    .then(res => res.ok ? res.json() : "FAIL");
   return res;
 }
 
@@ -110,13 +110,13 @@ async function getAllCategory(contents) {
 async function getNextNExpiring(n, contents=false) {
   let res = await fetch(STOCK_API_URL + "nextExpiring", {
     method: 'POST',
-    mode: 'cors',
+    mode: 'cors'e
     headers: {
       'Content-Type': 'application/json'
     },
     body: contents ? JSON.stringify({'n': n, 'contents': contents}) : JSON.stringify({'n': n})
   })
-    .then(res => res.json());
+    .then(res => res.ok ? res.json() : "FAIL");
   return res;
 }
 
@@ -185,7 +185,6 @@ async function getTraysInBay(pos) {
         },
         body: JSON.stringify(pos)
     })
-        .then(res => res.json());
     return res;
 }
 
@@ -204,7 +203,7 @@ async function getBaysInZone(zone) {
         },
       body: JSON.stringify({"zone":zone})
     })
-    .then(res => res.json());
+    .then(res => res.ok ? res.json() : "FAIL");
   return res
 }
 
@@ -422,7 +421,7 @@ async function getZones() {
             'Content-Type': 'application/json'
         }
     })
-        .then(res => res.json());
+    .then(res => res.ok ? res.json() : "FAIL");
     return res;
 }
 
