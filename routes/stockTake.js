@@ -76,7 +76,7 @@ async function editTrayMany(body, dbo) {
 
   for (let i = 0; i < body.length; i++) {
     tray = body[i];
-    if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray,hasOwnProperty('weight'))) {
+    if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight') && tray.hasOwnProperty('xPos') && tray.hasOwnProperty('yPos'))) {
       console.log("Malformed request!");
       return "FAIL";
     }
@@ -459,7 +459,7 @@ async function addTray(tray, dbo) {
 
 // called by mongoUpdate to build request to mongoDB to edit tray
 async function editTray(tray, dbo) {
-  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray,hasOwnProperty('weight'))) {
+  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight') && tray.hasOwnProperty('xPos') && tray.hasOwnProperty('yPos'))) {
     console.log("Malformed request!");
     return "FAIL";
   }
