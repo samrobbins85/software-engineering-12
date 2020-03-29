@@ -615,6 +615,7 @@ async function getTraysInBay(bay, dbo) {
   let pos = {"zone": bay["zone"], "bay": bay["bay"]};
 
   let trays = await dbo.collection("food").find(pos).toArray();
+  console.log(trays);
   return trays;
 }
 

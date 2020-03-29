@@ -185,6 +185,7 @@ async function getTraysInBay(pos) {
         },
         body: JSON.stringify(pos)
     })
+    .then(res => res.ok ? res.json() : "FAIL");
     return res;
 }
 
