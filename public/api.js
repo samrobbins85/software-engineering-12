@@ -202,7 +202,7 @@ async function getBaysInZone(zone) {
         headers: {
             'Content-Type': 'application/json'
         },
-      body: JSON.stringify({"zone":zone})
+      body: JSON.stringify(zone)
     })
     .then(res => res.ok ? res.json() : "FAIL");
   return res

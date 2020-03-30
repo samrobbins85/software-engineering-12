@@ -681,17 +681,17 @@ async function getTraysInBay(bay, dbo) {
 }
 
 async function getBaysInZone(zone, dbo) {
-  if (!(zone.hasOwnProperty('name'))) {
+  if (!(zone.hasOwnProperty('zone'))) {
     console.log("Malformed request!");
     return "FAIL";
   }
 
-  if (!(typeof(zone['name']) === "string")) {
+  if (!(typeof(zone['zone']) === "string")) {
     console.log("Zone name must be a string");
     return "FAIL";
   }
 
-  let pos = {"zone": zone["name"]};
+  let pos = {"zone": zone["zone"]};
 
   let trays = await dbo.collection("bays").find(pos).toArray();
   return trays;
