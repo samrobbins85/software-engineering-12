@@ -505,7 +505,7 @@ async function editTray(tray, dbo) {
   }
 
   if (tray.hasOwnProperty('expiry')) {
-    if (!(typeof(tray['expiry']) === "string"))
+    if (!(typeof(tray['expiry']) === "string")){
       console.log("Expiry must be a string!");
       return "FAIL";
     }
@@ -513,7 +513,7 @@ async function editTray(tray, dbo) {
   }
 
   if (tray.hasOwnProperty('contents')) {
-    if (!(typeof(tray['contents']) === "string"))
+    if (!(typeof(tray['contents']) === "string")){
       console.log("Contents must be a string!");
       return "FAIL";
     }
