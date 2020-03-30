@@ -196,13 +196,33 @@ async function getNextNExpiring(body, dbo) {
   } else {
     trays = await dbo.collection("food").find({}).toArray();
   }
+
+  // Converts all stored times into UNIX times to find the next N expiring.
+  // Dates need to be passed in MM/YYYY or YYYY format
+  for (count = 0; count < trays.length; count++) {
+    if (trays[count]["expiry"].length == 4) {
+      let x = new Date(parseInt(trays[count]["expiry"]), 11, 31, 23, 59, 59);
+      trays[count]["UNIXexpiry"] = x.getTime();
+    } else {
+      let expiryArray = tray["expiry"].split("/");
+      let x = new Date(parseInt(expiryArray[1]), (parseInt(expiryArray[0]) - 1), 1, 0, 0, 0);
+      trays[count]["UNIXexpiry"] = x.getTime();
+    }
+  }
+
+  trays.sort((a,b) => a.UNIXexpiry - b.UNIXexpiry);
+
+  // Deletes the UNIXexpiry key as the end user does not need to see this.
+  for (count = 0; count < trays.length; count++) {
+    delete trays["UNIXexpiry"]
+  }
+
   if (trays.length <= body['n']) {
     console.log("Total trays is less than specified. Use all trays.");
     trays.sort((a,b) => a.expiry - b.expiry);
     return trays;
   }
 
-  trays.sort((a,b) => a.expiry - b.expiry);
   return trays.slice(0, body['n']);
 }
 
@@ -436,8 +456,8 @@ async function addTray(tray, dbo) {
     return "FAIL";
   }
 
-  if (!(Number.isInteger(tray['weight']) && Number.isInteger['expiry'])) {
-    console.log("Weight, expiry must be integers!");
+  if (!(Number.isInteger(tray['weight']))) {
+    console.log("Weight must be an integer!");
     return "FAIL";
   }
 
@@ -449,17 +469,6 @@ async function addTray(tray, dbo) {
   if (tray['xPos'] < 0 || tray['yPos'] < 0) {
     console.log("Position must be within the valid range! (Positive Integer)");
     return "FAIL";
-  }
-
-  // TODO: deprecated? should be unix time <08-03-20, alex> //
-  if (tray["expiry"].length == 4) {
-    let x = new Date(parseInt(tray["expiry"]), 11, 31, 23, 59, 59);
-    tray["expiry"] = x.getTime();
-  }
-  else {
-    let expiryArray = tray["expiry"].split("/");
-    let x = new Date(parseInt(expiryArray[1]), (parseInt(expiryArray[0])-1), 1, 0, 0, 0);
-    tray["expiry"] = x.getTime();
   }
 
   var pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"], "contents": tray["contents"], "weight": tray["weight"], "expiry": tray["expiry"], "xPos": tray["xPos"], "yPos": tray["yPos"]};
@@ -476,42 +485,70 @@ async function addTray(tray, dbo) {
 
 // called by mongoUpdate to build request to mongoDB to edit tray
 async function editTray(tray, dbo) {
-  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray') && tray.hasOwnProperty('contents') && tray.hasOwnProperty('expiry') && tray.hasOwnProperty('weight') && tray.hasOwnProperty('xPos') && tray.hasOwnProperty('yPos'))) {
+  if (!(tray.hasOwnProperty('zone') && tray.hasOwnProperty('bay') && tray.hasOwnProperty('tray'))) {
     console.log("Malformed request!");
     return "FAIL";
   }
 
-  if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string" && typeof(tray['contents']) === "string")) {
-    console.log("Zone, bay, tray, contents and expiry must be strings!");
+  if (!(typeof(tray['zone']) === "string" && typeof(tray['bay']) === "string" && typeof(tray['tray']) === "string")) {
+    console.log("Zone, bay, tray must be strings!");
     return "FAIL";
   }
 
-  if (!(Number.isInteger(tray['weight']) && Number.isInteger['expiry'])) {
-    console.log("Weight, expiry must be integers!");
-    return "FAIL";
+  let newValues = {}
+
+  if (tray.hasOwnProperty('weight')) {
+    if (!(Number.isInteger(tray['weight']))) {
+      console.log("Weight must be an integer!");
+      return "FAIL";
+    }
+    newValues["weight"] = tray['weight']
   }
 
-  if (! (Number.isInteger(tray['xPos']) && Number.isInteger(tray['yPos']))) {
-    console.log("Position attributes must be integers");
-    return "FAIL";
+  if (tray.hasOwnProperty('expiry')) {
+    if (!(typeof(tray['expiry']) === "string"))
+      console.log("Expiry must be a string!");
+      return "FAIL";
+    }
+    newValues["expiry"] = tray['expiry']
   }
 
-  if (tray['xPos'] < 0 || tray['yPos'] < 0) {
-    console.log("Position must be within the valid range! (Positive Integer)");
-    return "FAIL";
+  if (tray.hasOwnProperty('contents')) {
+    if (!(typeof(tray['contents']) === "string"))
+      console.log("Contents must be a string!");
+      return "FAIL";
+    }
+    newValues["contents"] = tray['contents']
   }
 
-  if (tray["expiry"].length == 4) {
-    let x = new Date(parseInt(tray["expiry"]), 11, 31, 23, 59, 59);
-    tray["expiry"] = x.getTime();
-  }
-  else {
-    let expiryArray = tray["expiry"].split("/");
-    let x = new Date(parseInt(expiryArray[1]), (parseInt(expiryArray[0])-1), 1, 0, 0, 0);
-    tray["expiry"] = x.getTime();
+  if (tray.hasOwnProperty('xPos')) {
+    if (!(Number.isInteger(tray['weight']))) {
+      console.log("Weight must be an integer!");
+      return "FAIL";
+    }
+
+    if (tray['xPos'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+    newValues["xPos"] = tray['xPos']
   }
 
-  try {
+  if (tray.hasOwnProperty('yPos')) {
+    if (Number.isInteger(tray['yPos'])) {
+      console.log("Position attributes must be integers");
+      return "FAIL";
+    }
+
+    if (tray['yPos'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+    newValues["yPos"] = tray['yPos']
+  }
+
+  // OLD: Change this to find xPos and yPos from DB <Matt, 30/03/20>
+  /*try {
       collectionSize = dbo.collection("food").find({
           "zone": tray["zone"],
           "bay": tray["bay"],
@@ -526,10 +563,9 @@ async function editTray(tray, dbo) {
   } catch (ex) {
       console.log(ex);
       return "FAIL"
-  }
+  }*/
 
   let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
-  let newValues = {"contents": tray["contents"], "weight": tray["weight"], "expiry": tray["expiry"], "xPos": tray["xPos"], "yPos": tray["yPos"]};
 
   try {
     let res = await dbo.collection("food").updateOne(pos, {"$set": newValues});
