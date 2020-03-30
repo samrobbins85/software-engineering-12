@@ -294,6 +294,32 @@ async function removeZone(zone, dbo) {
 
   // TODO: Check if items still in zone
 
+  /*
+  let pos = {"zone": zone["zone"]};
+
+  try {
+    let bays = await dbo.collection("bays").find(pos).toArray();
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL";
+  }
+
+  let trays = []
+
+  for (bay in bays) {
+    let pos = {"bay": bay["bay"]}
+    try {
+      trays.push(await dbo.collecion("food").find(pos).toArray())
+    } catch (ex) {
+      console.log(ex);
+      return "FAIL";
+    }
+  }
+
+  if (trays.length)
+  */
+
+
   let pos = {"zone": zone["zone"]};
 
   try {
