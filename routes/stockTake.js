@@ -199,7 +199,7 @@ async function getNextNExpiring(body, dbo) {
 
   // Converts all stored times into UNIX times to find the next N expiring.
   // Dates need to be passed in MM/YYYY or YYYY format
-  for (count = 0; count < trays.length; count++) {
+  for (let count = 0; count < trays.length; count++) {
     if (trays[count]["expiry"].length == 4) {
       let x = new Date(parseInt(trays[count]["expiry"]), 11, 31, 23, 59, 59);
       trays[count]["UNIXexpiry"] = x.getTime();
@@ -219,7 +219,6 @@ async function getNextNExpiring(body, dbo) {
 
   if (trays.length <= body['n']) {
     console.log("Total trays is less than specified. Use all trays.");
-    trays.sort((a,b) => a.expiry - b.expiry);
     return trays;
   }
 
