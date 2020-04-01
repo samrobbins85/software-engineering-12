@@ -253,7 +253,7 @@ async function addZone(zone, dbo){
     return "FAIL";
   }
 
-  var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"]};
+  var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"], bays: []};
 
   try {
     let res = await dbo.collection("zones").insertOne(myobj);
@@ -266,18 +266,8 @@ async function addZone(zone, dbo){
 }
 
 async function editZone(zone, dbo) {
-  if (!(zone.hasOwnProperty('zone') && zone.hasOwnProperty('height') && zone.hasOwnProperty('width'))) {
+  if (!(zone.hasOwnProperty('zone'))) {
     console.log("Malformed request!");
-    return "FAIL";
-  }
-
-  if (!(Number.isInteger(zone['height']) && Number.isInteger(zone['width']))) {
-    console.log("Height and width must be integers!");
-    return "FAIL";
-  }
-
-  if (!(zone['height'] > 0 && zone['width'] > 0)) {
-    console.log("Height and width must be more than zero!");
     return "FAIL";
   }
 
@@ -286,8 +276,46 @@ async function editZone(zone, dbo) {
     return "FAIL";
   }
 
-  let pos = { name: zone["zone"] };
-  let newValues = { height: zone["height"], width: zone["width"] };
+  let pos = { name: zone["zone"] }
+  let newValues = {}
+
+  if (zone.hasOwnProperty('newname') && (!(zone["newname"] === zone["zone"]))) {
+    if (!(typeof(zone['newname'] === "string"))) {
+      console.log("New zone identifier must be a string!");
+      return "FAIL";
+    }
+    newValues["newname"] = zone["newname"]
+  }
+
+  if (zone.hasOwnProperty('height')) {
+    if (!(Number.isInteger(zone['height']))) {
+      console.log("Height must be an integer!");
+      return "FAIL";
+    }
+
+    if (!(zone['height'] > 0)) {
+      console.log("Height must be more than zero!");
+      return "FAIL";
+    }
+    newValues["height"] = zone["height"]
+  }
+
+  if (zone.hasOwnProperty('width')) {
+    if (!(Number.isInteger(zone['width']))) {
+      console.log("Width must be an integer!");
+      return "FAIL";
+    }
+
+    if (!(zone['width'] > 0)) {
+      console.log("Width must be more than zero!");
+      return "FAIL";
+    }
+    newValues["width"] = zone["width"]
+  }
+
+  if (!(newValues.hasOwnProperty('width') || newValues.hasOwnProperty('height') || newValues.hasOwnProperty('newname'))) {
+    return "SUCCESS";
+  }
 
   try {
     let res = dbo.collection("zones").updateOne(pos, {"$set": newValues});
