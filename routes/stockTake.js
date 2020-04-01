@@ -301,7 +301,7 @@ async function editZone(zone, dbo) {
 
 // called by mongoUpdate to build request to mongoDB to remove zone
 async function removeZone(zone, dbo) {
-  if (! (bay.hasOwnProperty('zone'))) {
+  if (! (zone.hasOwnProperty('zone'))) {
     console.log("Malformed request");
     return "FAIL";
   }
