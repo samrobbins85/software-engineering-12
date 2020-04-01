@@ -276,7 +276,7 @@ async function editZone(zone, dbo) {
     return "FAIL";
   }
 
-  let pos = { name: zone["zone"] }
+  let pos = { zone: zone["zone"] }
   let newValues = {}
 
   if (zone.hasOwnProperty('newname') && (!(zone["newname"] === zone["zone"]))) {
@@ -284,7 +284,7 @@ async function editZone(zone, dbo) {
       console.log("New zone identifier must be a string!");
       return "FAIL";
     }
-    newValues["newname"] = zone["newname"]
+    newValues["zone"] = zone["newname"]
   }
 
   if (zone.hasOwnProperty('height')) {
@@ -313,17 +313,20 @@ async function editZone(zone, dbo) {
     newValues["width"] = zone["width"]
   }
 
-  if (!(newValues.hasOwnProperty('width') || newValues.hasOwnProperty('height') || newValues.hasOwnProperty('newname'))) {
+  if (!(newValues.hasOwnProperty('width') || newValues.hasOwnProperty('height') || newValues.hasOwnProperty('zone'))) {
     return "SUCCESS";
   }
 
   try {
     let res = dbo.collection("zones").updateOne(pos, {"$set": newValues});
-    if (! (res['modifiedCount'] == 1)) return "FAIL";
+    dbo.collection("bays").updateMany(pos, {"$set": newValues});
+    dbo.collection("food").updateMany(pos, {"$set": newValues});
+    //if (! (res['modifiedCount'] == 1)) return "FAIL";
   } catch (ex) {
     console.log(ex);
     return "FAIL";
   }
+
   return "SUCCESS"
 }
 
@@ -372,6 +375,8 @@ async function removeZone(zone, dbo) {
   try {
     let res = await dbo.collection("zones").remove(pos);
     if (! (res['result']['n'] == 1)) return "FAIL";
+    await dbo.collection("bays").remove(pos);
+    await dbo.collection("food").remove(pos);
   } catch (ex) {
     console.log(ex);
     return "FAIL";
@@ -401,7 +406,7 @@ async function addBay(bay,dbo){
     return "FAIL";
   }
 
-  var myobj = { "name": bay["bay"], "zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]], "size": [bay["xSize"], bay["ySize"]]}
+  var myobj = { "bay": bay["bay"], "zone": bay["zone"], "xVal": bay["xVal"], "yVal": bay["yVal"], "xSize": bay["xSize"], "ySize": bay["ySize"]}
   try {
     let res = await dbo.collection("bays").insertOne(myobj);
     if (! (res['insertedCount'] == 1)) return "FAIL";
@@ -409,23 +414,24 @@ async function addBay(bay,dbo){
     console.log(ex);
     return "FAIL";
   }
+
+  let pos = {"zone": bay["zone"]};
+  let newValues = bay["bay"];
+
+  try {
+    await dbo.collection("zones").updateOne(pos, {"$push": {bays: newValues}});
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL";
+  }
+
   return "SUCCESS"
 }
 
 // called by mongoUpdate to build request to mongoDB to edit bay
 async function editBay(bay, dbo) {
-  if (! (bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
+  if (! (bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone'))) {
     console.log("Malformed request");
-    return "FAIL";
-  }
-
-  if (! (Number.isInteger(bay['xVal']) && Number.isInteger(bay['yVal']) && Number.isInteger(bay['xSize']) && Number.isInteger(bay['ySize']))) {
-    console.log("Position and size must be integers!");
-    return "FAIL";
-  }
-
-  if (bay['xVal'] < 0 || bay['yVal'] < 0 || bay['xSize'] < 0 || bay['ySize'] < 0) {
-    console.log("Position must be within the valid range! (Positive Integer)");
     return "FAIL";
   }
 
@@ -435,11 +441,61 @@ async function editBay(bay, dbo) {
   }
 
   let pos = {"bay": bay["bay"], "zone": bay["zone"]};
-  let newValues = {"position": [bay["xVal"], bay["yVal"]], "size": [bay["xSize"], bay["ySize"]]};
+  let newValues = {};
+
+
+  if (bay.hasOwnProperty('xVal')) {
+    if (! (Number.isInteger(bay['xVal']))) {
+      console.log("Position and size must be integers!");
+      return "FAIL";
+    }
+    if (bay['xVal'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+    newValues["xVal"] = bay["xVal"];
+  }
+
+  if (bay.hasOwnProperty('yVal')) {
+    if (! (Number.isInteger(bay['yVal']))) {
+      console.log("Position and size must be integers!");
+      return "FAIL";
+    }
+    if (bay['yVal'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+    newValues["yVal"] = bay["yVal"];
+  }
+
+  if (bay.hasOwnProperty('xSize')) {
+    if (! (Number.isInteger(bay['xSize']))) {
+      console.log("Position and size must be integers!");
+      return "FAIL";
+    }
+    if (bay['xSize'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+    newValues["xSize"] = bay["xSize"];
+  }
+
+  if (bay.hasOwnProperty('ySize')) {
+    if (! (Number.isInteger(bay['ySize']))) {
+      console.log("Position and size must be integers!");
+      return "FAIL";
+    }
+    if (bay['ySize'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+    newValues["ySize"] = bay["ySize"];
+  }
 
   try {
     let res = dbo.collection("bays").updateOne(pos, {"$set": newValues});
-    if (! (res['modifiedCount'] == 1)) return "FAIL";
+    //dbo.collection("food").updateMany(pos, {"$set": newValues[""]});
+    //if (! (res['modifiedCount'] == 1)) return "FAIL";
   } catch (ex) {
     console.log(ex);
     return "FAIL";
@@ -464,6 +520,7 @@ async function removeBay(bay, dbo) {
   try {
     let res = await dbo.collection("bays").remove(pos);
     if (! (res['result']['n'] == 1)) return "FAIL";
+    await dbo.collection("food").remove(pos);
   } catch (ex) {
     console.log(ex);
     return "FAIL";
