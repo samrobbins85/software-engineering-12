@@ -248,7 +248,7 @@ async function addZone(zone, dbo){
     return "FAIL";
   }
 
-  if (!(typeof(zone['name'] === "string"))) {
+  if (!(typeof(zone['zone'] === "string"))) {
     console.log("Zone identifier must be a string!");
     return "FAIL";
   }
