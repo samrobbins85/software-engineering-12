@@ -425,6 +425,21 @@ async function addBay(bay,dbo){
     return "FAIL";
   }
 
+  for (let count = 0; count < bay["ySize"]; count++) {
+    for (let count2 = 0; count2 < bay["xSize"]; count2++) {
+      let myobj = {"zone": bay["zone"], "bay": bay["bay"], "tray": "", "contents": "", "expiry": "", "weight": 0, "xPos": count2, "yPos": count}
+
+      let res = await dbo.collection("food").insertOne(myobj);
+      /*try {
+        let res = await dbo.collection("food").insertOne(myobj);
+        if (! (res['upsertedCount'] == 1)) return "FAIL";
+      } catch (ex) {
+        console.log(ex);
+        return "FAIL";
+      }*/
+    }
+  }
+
   return "SUCCESS"
 }
 
@@ -493,7 +508,14 @@ async function editBay(bay, dbo) {
   }
 
   try {
-    let res = dbo.collection("bays").updateOne(pos, {"$set": newValues});
+    let res = await dbo.collection("bays").updateOne(pos, {"$set": newValues});
+
+    pos = {"bay": bay["bay"], "zone": bay["zone"], "xPos": {$gt: (bay["xSize"]-1)}};
+    await dbo.collection("food").remove(pos);
+
+    pos = {"bay": bay["bay"], "zone": bay["zone"], "yPos": {$gt: (bay["ySize"]-1)}};
+    await dbo.collection("food").remove(pos);
+
     //dbo.collection("food").updateMany(pos, {"$set": newValues[""]});
     //if (! (res['modifiedCount'] == 1)) return "FAIL";
   } catch (ex) {
