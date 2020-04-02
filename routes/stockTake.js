@@ -248,12 +248,12 @@ async function addZone(zone, dbo){
     return "FAIL";
   }
 
-  if (!(typeof(zone['name'] === "string"))) {
+  if (!(typeof(zone['zone'] === "string"))) {
     console.log("Zone identifier must be a string!");
     return "FAIL";
   }
 
-  var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"]};
+  var myobj = { name: zone["zone"], height: zone["height"], width: zone["width"], bays: []};
 
   try {
     let res = await dbo.collection("zones").insertOne(myobj);
@@ -266,18 +266,8 @@ async function addZone(zone, dbo){
 }
 
 async function editZone(zone, dbo) {
-  if (!(zone.hasOwnProperty('zone') && zone.hasOwnProperty('height') && zone.hasOwnProperty('width'))) {
+  if (!(zone.hasOwnProperty('zone'))) {
     console.log("Malformed request!");
-    return "FAIL";
-  }
-
-  if (!(Number.isInteger(zone['height']) && Number.isInteger(zone['width']))) {
-    console.log("Height and width must be integers!");
-    return "FAIL";
-  }
-
-  if (!(zone['height'] > 0 && zone['width'] > 0)) {
-    console.log("Height and width must be more than zero!");
     return "FAIL";
   }
 
@@ -286,22 +276,63 @@ async function editZone(zone, dbo) {
     return "FAIL";
   }
 
-  let pos = { name: zone["zone"] };
-  let newValues = { height: zone["height"], width: zone["width"] };
+  let pos = { zone: zone["zone"] }
+  let newValues = {}
+
+  if (zone.hasOwnProperty('newname') && (!(zone["newname"] === zone["zone"]))) {
+    if (!(typeof(zone['newname'] === "string"))) {
+      console.log("New zone identifier must be a string!");
+      return "FAIL";
+    }
+    newValues["zone"] = zone["newname"]
+  }
+
+  if (zone.hasOwnProperty('height')) {
+    if (!(Number.isInteger(zone['height']))) {
+      console.log("Height must be an integer!");
+      return "FAIL";
+    }
+
+    if (!(zone['height'] > 0)) {
+      console.log("Height must be more than zero!");
+      return "FAIL";
+    }
+    newValues["height"] = zone["height"]
+  }
+
+  if (zone.hasOwnProperty('width')) {
+    if (!(Number.isInteger(zone['width']))) {
+      console.log("Width must be an integer!");
+      return "FAIL";
+    }
+
+    if (!(zone['width'] > 0)) {
+      console.log("Width must be more than zero!");
+      return "FAIL";
+    }
+    newValues["width"] = zone["width"]
+  }
+
+  if (!(newValues.hasOwnProperty('width') || newValues.hasOwnProperty('height') || newValues.hasOwnProperty('zone'))) {
+    return "SUCCESS";
+  }
 
   try {
     let res = dbo.collection("zones").updateOne(pos, {"$set": newValues});
-    if (! (res['modifiedCount'] == 1)) return "FAIL";
+    dbo.collection("bays").updateMany(pos, {"$set": newValues});
+    dbo.collection("food").updateMany(pos, {"$set": newValues});
+    //if (! (res['modifiedCount'] == 1)) return "FAIL";
   } catch (ex) {
     console.log(ex);
     return "FAIL";
   }
+
   return "SUCCESS"
 }
 
 // called by mongoUpdate to build request to mongoDB to remove zone
 async function removeZone(zone, dbo) {
-  if (! (bay.hasOwnProperty('zone'))) {
+  if (! (zone.hasOwnProperty('zone'))) {
     console.log("Malformed request");
     return "FAIL";
   }
@@ -344,6 +375,8 @@ async function removeZone(zone, dbo) {
   try {
     let res = await dbo.collection("zones").remove(pos);
     if (! (res['result']['n'] == 1)) return "FAIL";
+    await dbo.collection("bays").remove(pos);
+    await dbo.collection("food").remove(pos);
   } catch (ex) {
     console.log(ex);
     return "FAIL";
@@ -373,7 +406,7 @@ async function addBay(bay,dbo){
     return "FAIL";
   }
 
-  var myobj = { "name": bay["bay"], "zone": bay["zone"], "position": [bay["xVal"], bay["yVal"]], "size": [bay["xSize"], bay["ySize"]]}
+  var myobj = { "bay": bay["bay"], "zone": bay["zone"], "xVal": bay["xVal"], "yVal": bay["yVal"], "xSize": bay["xSize"], "ySize": bay["ySize"]}
   try {
     let res = await dbo.collection("bays").insertOne(myobj);
     if (! (res['insertedCount'] == 1)) return "FAIL";
@@ -381,23 +414,39 @@ async function addBay(bay,dbo){
     console.log(ex);
     return "FAIL";
   }
+
+  let pos = {"zone": bay["zone"]};
+  let newValues = bay["bay"];
+
+  try {
+    await dbo.collection("zones").updateOne(pos, {"$push": {bays: newValues}});
+  } catch (ex) {
+    console.log(ex);
+    return "FAIL";
+  }
+
+  for (let count = 0; count < bay["ySize"]; count++) {
+    for (let count2 = 0; count2 < bay["xSize"]; count2++) {
+      let myobj = {"zone": bay["zone"], "bay": bay["bay"], "tray": "", "contents": "", "expiry": "", "weight": 0, "xPos": count2, "yPos": count}
+
+      let res = await dbo.collection("food").insertOne(myobj);
+      /*try {
+        let res = await dbo.collection("food").insertOne(myobj);
+        if (! (res['upsertedCount'] == 1)) return "FAIL";
+      } catch (ex) {
+        console.log(ex);
+        return "FAIL";
+      }*/
+    }
+  }
+
   return "SUCCESS"
 }
 
 // called by mongoUpdate to build request to mongoDB to edit bay
 async function editBay(bay, dbo) {
-  if (! (bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone') && bay.hasOwnProperty('xVal') && bay.hasOwnProperty('yVal') && bay.hasOwnProperty('xSize') && bay.hasOwnProperty('ySize'))) {
+  if (! (bay.hasOwnProperty('bay') && bay.hasOwnProperty('zone'))) {
     console.log("Malformed request");
-    return "FAIL";
-  }
-
-  if (! (Number.isInteger(bay['xVal']) && Number.isInteger(bay['yVal']) && Number.isInteger(bay['xSize']) && Number.isInteger(bay['ySize']))) {
-    console.log("Position and size must be integers!");
-    return "FAIL";
-  }
-
-  if (bay['xVal'] < 0 || bay['yVal'] < 0 || bay['xSize'] < 0 || bay['ySize'] < 0) {
-    console.log("Position must be within the valid range! (Positive Integer)");
     return "FAIL";
   }
 
@@ -407,11 +456,68 @@ async function editBay(bay, dbo) {
   }
 
   let pos = {"bay": bay["bay"], "zone": bay["zone"]};
-  let newValues = {"position": [bay["xVal"], bay["yVal"]], "size": [bay["xSize"], bay["ySize"]]};
+  let newValues = {};
+
+
+  if (bay.hasOwnProperty('xVal')) {
+    if (! (Number.isInteger(bay['xVal']))) {
+      console.log("Position and size must be integers!");
+      return "FAIL";
+    }
+    if (bay['xVal'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+    newValues["xVal"] = bay["xVal"];
+  }
+
+  if (bay.hasOwnProperty('yVal')) {
+    if (! (Number.isInteger(bay['yVal']))) {
+      console.log("Position and size must be integers!");
+      return "FAIL";
+    }
+    if (bay['yVal'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+    newValues["yVal"] = bay["yVal"];
+  }
+
+  if (bay.hasOwnProperty('xSize')) {
+    if (! (Number.isInteger(bay['xSize']))) {
+      console.log("Position and size must be integers!");
+      return "FAIL";
+    }
+    if (bay['xSize'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+    newValues["xSize"] = bay["xSize"];
+  }
+
+  if (bay.hasOwnProperty('ySize')) {
+    if (! (Number.isInteger(bay['ySize']))) {
+      console.log("Position and size must be integers!");
+      return "FAIL";
+    }
+    if (bay['ySize'] < 0) {
+      console.log("Position must be within the valid range! (Positive Integer)");
+      return "FAIL";
+    }
+    newValues["ySize"] = bay["ySize"];
+  }
 
   try {
-    let res = dbo.collection("bays").updateOne(pos, {"$set": newValues});
-    if (! (res['modifiedCount'] == 1)) return "FAIL";
+    let res = await dbo.collection("bays").updateOne(pos, {"$set": newValues});
+
+    pos = {"bay": bay["bay"], "zone": bay["zone"], "xPos": {$gt: (bay["xSize"]-1)}};
+    await dbo.collection("food").remove(pos);
+
+    pos = {"bay": bay["bay"], "zone": bay["zone"], "yPos": {$gt: (bay["ySize"]-1)}};
+    await dbo.collection("food").remove(pos);
+
+    //dbo.collection("food").updateMany(pos, {"$set": newValues[""]});
+    //if (! (res['modifiedCount'] == 1)) return "FAIL";
   } catch (ex) {
     console.log(ex);
     return "FAIL";
@@ -436,6 +542,7 @@ async function removeBay(bay, dbo) {
   try {
     let res = await dbo.collection("bays").remove(pos);
     if (! (res['result']['n'] == 1)) return "FAIL";
+    await dbo.collection("food").remove(pos);
   } catch (ex) {
     console.log(ex);
     return "FAIL";
