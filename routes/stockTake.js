@@ -540,6 +540,12 @@ async function removeBay(bay, dbo) {
     let res = await dbo.collection("bays").remove(pos);
     if (! (res['result']['n'] == 1)) return "FAIL";
     await dbo.collection("food").remove(pos);
+
+    pos = {"zone": bay["zone"]};
+    let toPull = {"bay": bay["bay"]}
+
+    await dbo.collection("zones").updateOne(pos, {"$pull": {bays: bay["bay"]}});
+
   } catch (ex) {
     console.log(ex);
     return "FAIL";
