@@ -515,9 +515,6 @@ async function editBay(bay, dbo) {
 
     pos = {"bay": bay["bay"], "zone": bay["zone"], "yPos": {$gt: (bay["ySize"]-1)}};
     await dbo.collection("food").remove(pos);
-
-    //dbo.collection("food").updateMany(pos, {"$set": newValues[""]});
-    //if (! (res['modifiedCount'] == 1)) return "FAIL";
   } catch (ex) {
     console.log(ex);
     return "FAIL";
