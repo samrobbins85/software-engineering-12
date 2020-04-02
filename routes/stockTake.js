@@ -168,8 +168,8 @@ async function getAllCategory(body, dbo) {
     console.log("'contents' must be a string");
     return "FAIL";
   }
-
-  const trays = await dbo.collection("food").find({"contents": body['contents']}).toArray();
+  console.log(body['contents'].contents)
+  const trays = await dbo.collection("food").find({"contents": body['contents'].contents}).toArray();
   return trays;
 }
 
@@ -676,7 +676,7 @@ async function getTraysInBay(bay, dbo) {
   let pos = {"zone": bay["zone"], "bay": bay["bay"]};
 
   let trays = await dbo.collection("food").find(pos).toArray();
-  console.log(trays);
+  // console.log(trays);
   return trays;
 }
 
