@@ -204,7 +204,7 @@ async function getNextNExpiring(body, dbo) {
             let x = new Date(parseInt(trays[count]["expiry"]), 11, 31, 23, 59, 59);
             trays[count]["UNIXexpiry"] = x.getTime();
         } else {
-            let expiryArray = tray["expiry"].split("/");
+            let expiryArray = trays[count]["expiry"].split("/");
             let x = new Date(parseInt(expiryArray[1]), (parseInt(expiryArray[0]) - 1), 1, 0, 0, 0);
             trays[count]["UNIXexpiry"] = x.getTime();
         }
