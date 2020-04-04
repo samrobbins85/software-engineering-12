@@ -438,7 +438,7 @@ async function addBay(bay, dbo) {
                 "zone": bay["zone"],
                 "bay": bay["bay"],
                 "tray": "",
-                "contents": "",
+                "contents": "EMPTY",
                 "expiry": "",
                 "weight": 0,
                 "xPos": count2,

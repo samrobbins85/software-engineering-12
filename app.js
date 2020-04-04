@@ -6,10 +6,14 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require("cors")
 
+
+
 let stockTakeRouter = require('./routes/stockTake')
 
 var app = express();
 app.use(cors())
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,6 +26,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
+
+app.use(function(req, res, next) {
+  if (!req.headers.authorization) {
+    return res.status(403).json({ error: 'No credentials sent!' });
+  }
+  if (req.headers.authorization!=="YWxhZGRpbjpvcGVuc2VzYW1l") {
+    return res.status(403).json({ error: 'Invalid credentials' });
+  }
+  next();
+});
+
 
 app.use('/stockTake', stockTakeRouter);
 
