@@ -342,34 +342,6 @@ async function removeZone(zone, dbo) {
         return "FAIL";
     }
 
-    // TODO: Check if items still in zone
-
-    /*
-    let pos = {"zone": zone["zone"]};
-
-    try {
-      let bays = await dbo.collection("bays").find(pos).toArray();
-    } catch (ex) {
-      console.log(ex);
-      return "FAIL";
-    }
-
-    let trays = []
-
-    for (bay in bays) {
-      let pos = {"bay": bay["bay"]}
-      try {
-        trays.push(await dbo.collecion("food").find(pos).toArray())
-      } catch (ex) {
-        console.log(ex);
-        return "FAIL";
-      }
-    }
-
-    if (trays.length)
-    */
-
-
     let pos = {"zone": zone["zone"]};
 
     try {
@@ -446,13 +418,6 @@ async function addBay(bay, dbo) {
             }
 
             let res = await dbo.collection("food").insertOne(myobj);
-            /*try {
-              let res = await dbo.collection("food").insertOne(myobj);
-              if (! (res['upsertedCount'] == 1)) return "FAIL";
-            } catch (ex) {
-              console.log(ex);
-              return "FAIL";
-            }*/
         }
     }
 
@@ -524,13 +489,68 @@ async function editBay(bay, dbo) {
     }
 
     try {
+        let oldBay = await dbo.collection("bays").findOne(pos);
+        oldBay["xSize"] = parseInt(oldBay["xSize"]);
+        oldBay["ySize"] = parseInt(oldBay["ySize"]);
+
         let res = await dbo.collection("bays").updateOne(pos, {"$set": newValues});
 
-        pos = {"bay": bay["bay"], "zone": bay["zone"], "xPos": {$gt: (bay["xSize"] - 1)}};
-        await dbo.collection("food").remove(pos);
+        if (bay.hasOwnProperty('xSize')) {
+            if (bay["xSize"] < oldBay["xSize"]) {
+                pos = {"bay": bay["bay"], "zone": bay["zone"], "xPos": {$gt: (bay["xSize"] - 1)}};
+                await dbo.collection("food").remove(pos);
+            }
+        }
 
-        pos = {"bay": bay["bay"], "zone": bay["zone"], "yPos": {$gt: (bay["ySize"] - 1)}};
-        await dbo.collection("food").remove(pos);
+        if (bay.hasOwnProperty('ySize')) {
+            if (bay["ySize"] < oldBay["ySize"]) {
+                pos = {"bay": bay["bay"], "zone": bay["zone"], "yPos": {$gt: (bay["ySize"] - 1)}};
+                await dbo.collection("food").remove(pos);
+            }
+        }
+
+        let myobj = {};
+
+        if (bay.hasOwnProperty('xSize')) {
+            if (bay["xSize"] > oldBay["xSize"]) {
+                for (let newX = oldBay["xSize"]; newX < bay["xSize"]; newX++) {
+                    for (let y = 0; y < oldBay["ySize"]; y++) {
+                        myobj = {
+                            "zone": bay["zone"],
+                            "bay": bay["bay"],
+                            "tray": "",
+                            "contents": "EMPTY",
+                            "expiry": "",
+                            "weight": 0,
+                            "xPos": newX,
+                            "yPos": y
+                        }
+                        await dbo.collection("food").insertOne(myobj);
+                    }
+                }
+            }
+        }
+
+        if (bay.hasOwnProperty('ySize')) {
+            if (bay["ySize"] > oldBay["ySize"]) {
+                for (let newY = oldBay["ySize"]; newY < bay["ySize"]; newY++) {
+                    for (let x = 0; x < bay["xSize"]; x++) {
+                        myobj = {
+                            "zone": bay["zone"],
+                            "bay": bay["bay"],
+                            "tray": "",
+                            "contents": "EMPTY",
+                            "expiry": "",
+                            "weight": 0,
+                            "xPos": x,
+                            "yPos": newY
+                        }
+                        await dbo.collection("food").insertOne(myobj);
+                    }
+                }
+            }
+        }
+
     } catch (ex) {
         console.log(ex);
         return "FAIL";
@@ -655,49 +675,13 @@ async function editTray(tray, dbo) {
         newValues["contents"] = tray['contents']
     }
 
-    if (tray.hasOwnProperty('xPos')) {
+    if (tray.hasOwnProperty('weight')) {
         if (!(Number.isInteger(tray['weight']))) {
             console.log("Weight must be an integer!");
             return "FAIL";
         }
-
-        if (tray['xPos'] < 0) {
-            console.log("Position must be within the valid range! (Positive Integer)");
-            return "FAIL";
-        }
-        newValues["xPos"] = tray['xPos']
+        newValues["weight"] = tray['weight']
     }
-
-    if (tray.hasOwnProperty('yPos')) {
-        if (Number.isInteger(tray['yPos'])) {
-            console.log("Position attributes must be integers");
-            return "FAIL";
-        }
-
-        if (tray['yPos'] < 0) {
-            console.log("Position must be within the valid range! (Positive Integer)");
-            return "FAIL";
-        }
-        newValues["yPos"] = tray['yPos']
-    }
-
-    // OLD: Change this to find xPos and yPos from DB <Matt, 30/03/20>
-    /*try {
-        collectionSize = dbo.collection("food").find({
-            "zone": tray["zone"],
-            "bay": tray["bay"],
-            "xPos": {$gt: tray["xPos"]},
-            "yPos": {$gt: tray["yPos"]}
-        }).limit(1).length()
-
-        if (collectionSize > 0) {
-            console.log("Trays will be deleted if this action is performed - please delete trays first.")
-            return "FAIL"
-        }
-    } catch (ex) {
-        console.log(ex);
-        return "FAIL"
-    }*/
 
     let pos = {"zone": tray["zone"], "bay": tray["bay"], "tray": tray["tray"]};
 
@@ -765,34 +749,25 @@ async function switchTray(body, dbo) {
         return "FAIL";
     }
 
-    // TODO: may be able to use mongoDB $ operators to improve this <08-03-20, alex> //
     try {
-        const aPromise = dbo.collection("food").findOne(first);
-        const bPromise = dbo.collection("food").findOne(second);
-        const [a, b] = await Promise.all([aPromise, bPromise]);
+        let trayA = dbo.collection("food").findOne(first);
+        let trayB = dbo.collection("food").findOne(second);
 
-        if (a === null || b === null) {
-            console.log(e); // what is e?
-            return "FAIL";
-        } else {
-            if (a.length != 1 || b.length != 1) {
-                console.log("Tray does not exist!");
-                return "FAIL";
-            }
-            const setA = dbo.collection("food").replaceOne(first, {$set: second});
-            const setB = dbo.collection("food").replaceOne(second, {$set: first});
-
-            const [sa, sb] = await Promise.all([setA, setB]);
-            if (sa['modifiedCount'] != 1 || sb['modifiedCount'] != 1) {
-                console.log("Failed to replace at specified locations!");
-                return "FAIL";
-            }
-
-        }
+        let trayAJSON = {"zone": trayA["zone"], "bay": trayA["bay"], "tray": trayA["tray"], "contents": trayB["contents"], "weight": trayB["weight"], "expiry": trayB["expiry"], "xPos": trayB["xPos"], "yPos": trayB["yPos"]};
+        let trayBJSON = {"zone": trayB["zone"], "bay": trayB["bay"], "tray": trayB["tray"], "contents": trayA["contents"], "weight": trayA["weight"], "expiry": trayA["expiry"], "xPos": trayA["xPos"], "yPos": trayA["yPos"]};
     } catch (e) {
         console.log(e);
         return "FAIL";
     }
+
+    try {
+        let res = dbo.collection("food").replaceOne(trayA, {$set: trayAJSON});
+        if (!(res['result']['n'] == 1)) return "FAIL";
+    } catch (e) {
+        console.log(e);
+        return "FAIL";
+    }
+
     return "SUCCESS";
 }
 
