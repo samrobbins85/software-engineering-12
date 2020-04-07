@@ -253,9 +253,16 @@ async function addZone(zone, dbo) {
         return "FAIL";
     }
 
-    var myobj = {name: zone["zone"], height: zone["height"], width: zone["width"], bays: []};
+    var myobj = {"zone": zone["zone"], "height": zone["height"], "width": zone["width"], "bays": []};
 
     try {
+        let pos = {"zone": zone["zone"]}
+
+        const oldZones = await dbo.collection("zones").find(pos).toArray();
+        if (!(oldBays === [])) {
+            return "FAIL";
+        }
+
         let res = await dbo.collection("zones").insertOne(myobj);
         if (!(res['insertedCount'] == 1)) return "FAIL";
     } catch (ex) {
@@ -387,6 +394,13 @@ async function addBay(bay, dbo) {
         "ySize": bay["ySize"]
     }
     try {
+        let pos = {"zone": bay["zone"], "bay": bay["zone"]}
+
+        const oldBays = await dbo.collection("bays").find(pos).toArray();
+        if (!(oldBays === [])) {
+            return "FAIL";
+        }
+
         let res = await dbo.collection("bays").insertOne(myobj);
         if (!(res['insertedCount'] == 1)) return "FAIL";
     } catch (ex) {
