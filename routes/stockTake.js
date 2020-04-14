@@ -259,7 +259,7 @@ async function addZone(zone, dbo) {
         let pos = {"zone": zone["zone"]}
 
         const oldZones = await dbo.collection("zones").find(pos).toArray();
-        if (!(oldZones === [])) {
+        if (oldZones.length == 0) {
             return "FAIL";
         }
 
@@ -397,7 +397,7 @@ async function addBay(bay, dbo) {
         let pos = {"zone": bay["zone"], "bay": bay["zone"]}
 
         const oldBays = await dbo.collection("bays").find(pos).toArray();
-        if (!(oldBays === [])) {
+        if (oldBays.length == 0) {
             return "FAIL";
         }
 
