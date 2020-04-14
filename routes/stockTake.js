@@ -264,19 +264,37 @@ async function addZone(zone, dbo) {
             return "FAIL";
         }
 
-
         var myobj = {
-        "bay": "TEMP",
-        "zone": zone["zone"],
-        "xVal": 0,
-        "yVal": 0,
-        "xSize": 1,
-        "ySize": 1}
+            "bay": "TEMP",
+            "zone": zone["zone"],
+            "xVal": 0,
+            "yVal": 0,
+            "xSize": 1,
+            "ySize": 1
+        }
 
         await dbo.collection("bays").insertOne(myobj);
 
+        var myobj = {
+            "bay": "TEMP",
+            "zone": zone["zone"],
+            "tray": 0,
+            "contents": "EMPTY",
+            "expiry": "",
+            "weight": 0,
+            "xPos": 0,
+            "yPos": 0
+        }
+
+        await dbo.collection("food").insertOne(myobj);
+
         let res = await dbo.collection("zones").insertOne(myobj);
         if (!(res['insertedCount'] == 1)) return "FAIL";
+
+        let tempBay = "TEMP";
+        let newValues = {"bay": tempBay};
+        await dbo.collection("zones").updateOne(pos, {"$push": {bays: newValues}});
+
     } catch (ex) {
         console.log(ex);
         return "FAIL";
@@ -593,6 +611,13 @@ async function removeBay(bay, dbo) {
 
     if (!(typeof (bay['bay']) == "string")) {
         console.log("Bay and zone identifiers must be strings.");
+        return "FAIL";
+    }
+
+    let test = {"zone": bay["zone"]};
+    let test_res = await dbo.collection("zones").find(test).toArray();
+    if (test_res[0].bays.length == 1) {
+        console.log("All zones must have one bay.")
         return "FAIL";
     }
 
