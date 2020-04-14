@@ -259,9 +259,21 @@ async function addZone(zone, dbo) {
         let pos = {"zone": zone["zone"]}
 
         const oldZones = await dbo.collection("zones").find(pos).toArray();
-        if (oldZones.length == 0) {
+        console.log(oldZones.length);
+        if (!(oldZones.length == 0)) {
             return "FAIL";
         }
+
+
+        var myobj = {
+        "bay": "TEMP",
+        "zone": zone["zone"],
+        "xVal": 0,
+        "yVal": 0,
+        "xSize": 1,
+        "ySize": 1}
+
+        await dbo.collection("bays").insertOne(myobj);
 
         let res = await dbo.collection("zones").insertOne(myobj);
         if (!(res['insertedCount'] == 1)) return "FAIL";
@@ -397,7 +409,7 @@ async function addBay(bay, dbo) {
         let pos = {"zone": bay["zone"], "bay": bay["zone"]}
 
         const oldBays = await dbo.collection("bays").find(pos).toArray();
-        if (oldBays.length == 0) {
+        if (!(oldBays.length == 0)) {
             return "FAIL";
         }
 
